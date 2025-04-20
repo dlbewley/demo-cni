@@ -1,21 +1,17 @@
 ---
 marp: true
-theme: ./css/palette-3.css
+theme: default
 paginate: true
 size: 4k
 class: font-xs
-@auto-scaling: code
 ---
 <!-- _paginate: skip -->
 <!-- _footer: _Dale Bewley_ -->
-<!-- class: bg-tertiary -->
 
 # Deep dive into [CNI](https://cni.dev/)
 
 ---
-<!-- backgroundColor: bg-secondary -->
-<!-- class: bg-secondary -->
-
+<!-- paginate: true -->
 # Presentation Outline
 ## Intro & objectives
 
@@ -30,7 +26,7 @@ class: font-xs
   * Core repo for the OVN–Kubernetes integration: CNI binaries, controllers, docs.  
 * **OpenShift OVN‑Kubernetes Guide**  
   * Docs: [OpenShift Container Platform Networking – OVN‑Kubernetes](https://docs.redhat.com/en/documentation/openshift_container_platform/4.18/html/networking/index)
-  * Red Hat’s overview of
+  * Red Hat's overview of
 
 ---
 ## Multus architecture
@@ -86,7 +82,9 @@ spec:
 ---
 <!-- class: default -->
 #### Virt-Launcher Pod
-Two ethernet interfaces in the virt launcher pod. One on infrastructure locked `10.128.0.0/14` cluster network & one always on `10.0.2.1/24`.
+Two ethernet interfaces in the virt launcher pod. 
+* Infrastructure locked `10.128.0.0/14` cluster network 
+* Always on `10.0.2.1/24`
 
 ```bash
 sh-5.1$ ip -c link
@@ -144,10 +142,12 @@ default via 10.0.2.1 dev eth0 proto dhcp src 10.0.2.2 metric 100
 <!-- _class: invert -->
 <!-- header: Primary User Defined Network -->
 <style scoped>  { columns: 2; } </style>
+
 ### VM Examples - Primary UDN
 
-<style scoped> section { columns: 2; } </style>
-VMs have unique IPs from UDN subnet
+#### VMs have unique IPs from UDN subnet
+
+Layer2 topology only (`localnet` soon)
 
 ```yaml
 apiVersion: k8s.ovn.org/v1
@@ -186,9 +186,11 @@ spec:
 
 ---
 <!-- class: default -->
-
 ## Virt-Launcher Pod
-Two ethernet interfaces in the pod. One on infrastructure locked cluster network & one on UDN.
+
+Two ethernet interfaces in the virt launcher pod. 
+* Infrastructure locked `10.128.0.0/14` cluster network  for kubelet health checks _only_
+* Unique IP on the UDN range `10.1.1.0/24`
 
 ```bash
 sh-5.1$ ip -c link
@@ -210,7 +212,8 @@ lo               UNKNOWN        127.0.0.1/8
 eth0@if356       UP             10.131.1.75/23 
 ovn-udn1         DOWN           10.1.1.3/24 
 ```
-
+---
+## Virtual Machine
 One ethernet interface in the VM with IP from primary UDN
 
 ```bash
@@ -232,7 +235,7 @@ default via 10.1.1.1 dev eth0 proto dhcp src 10.1.1.3 metric 100
 ---
 # VM on Primary User Defined Network 
 
-## Interfaces
+## Summary
 
 ### Virt-launcher Pods
 * Two ethernet interfaces
