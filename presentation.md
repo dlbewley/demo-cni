@@ -84,7 +84,7 @@ spec:
 ---
 <!-- class: default -->
 
-One ethernet interface in the pod
+Two ethernet interfaces in the pod. One on infrastructure locked cluster network & one on 10.0.2.1/24 in every virt launcher pod.
 
 ```bash
 sh-5.1$ ip -c link
@@ -103,7 +103,7 @@ eth0@if379       UP             10.131.1.97/23
 k6t-eth0         UP             10.0.2.1/24  
 ```
 
-Ethernet interface in the VM _always_ has IP `10.0.2.2/24`. Masquerades as pod IP (`10.131.1.97/23` above).
+Ethernet interface in the VM _always_ has IP `10.0.2.2/24`. Masquerades as pod IP `10.131.1.97/23` above.
 
 ```bash
 [cloud-user@vm-pod ~]$ ip -c link
@@ -116,7 +116,26 @@ Ethernet interface in the VM _always_ has IP `10.0.2.2/24`. Masquerades as pod I
 [cloud-user@vm-pod ~]$ ip -br -c -4 a
 lo               UNKNOWN        127.0.0.1/8 
 eth0             UP             10.0.2.2/24 
+
+[cloud-user@vm-pod ~]$ ip -c route
+default via 10.0.2.1 dev eth0 proto dhcp src 10.0.2.2 metric 100 
+10.0.2.0/24 dev eth0 proto kernel scope link src 10.0.2.2 metric 100 
 ```
+
+---
+# Default Cluster Network 
+
+## Interfaces
+
+### Virt-launcher Pods
+* eth0 on cluster network `10.128.0.0/14`
+* k6t-eth0 always has IP `10.0.2.1/24`
+
+### VirtualMachines
+* eth0 always has IP `10.0.2.2/24`
+* Default gateway is `10.0.2.1` on virt-launcher pod
+* Masquerades at pod edge as IP of the virt-launcher pod
+* Masquerades at node edge as IP of node default interface `br-ex`
 
 ---
 <!-- _class: invert -->
@@ -182,6 +201,48 @@ One ethernet interface in the VM with IP from primary UDN
 [cloud-user@vm-primary-udn ~]$ ip -br -c -4 a
 lo               UNKNOWN        127.0.0.1/8 
 eth0             UP             10.1.1.3/24 
+
+[cloud-user@vm-primary-udn ~]$ ip -c route
+default via 10.1.1.1 dev eth0 proto dhcp src 10.1.1.3 metric 100 
+10.1.1.0/24 dev eth0 proto kernel scope link src 10.1.1.3 metric 100 
+```
+---
+# Primary User Defined Network 
+
+
+## Interfaces
+
+### Virt-launcher Pods
+* Two ethernet interfaces
+* eth0@if356 is on infrastructure locked cluster network `10.128.0.0/14`
+* ovn-udn1 is on primary UDN `10.1.1.3/24`
+
+### VirtualMachines
+* eth0 has IP `10.1.1.3/24` from primary UDN
+* Default gateway is `10.1.1.1`
+* Masquerades at UDN gateway rotuer as the IP from `169.254.0.0/17` associated with the UDN
+* Masquerades at node edge as IP of node default interface `br-ex`
+---
+
+## Masquerade Subnet
+Each UDN has two IPs allocated from the masquerade subnet.
+```yaml
+# oc get network.operator/cluster -o yaml
+apiVersion: operator.openshift.io/v1
+kind: Network
+metadata:
+  name: cluster
+spec:
+  clusterNetwork:
+  - cidr: 10.128.0.0/14
+    hostPrefix: 23
+  defaultNetwork:
+    ovnKubernetesConfig:
+      egressIPConfig: {}
+      gatewayConfig:
+        ipv4: {} # <-- default: 169.254.0.0/17
+        ipv6: {} # <-- default: fd69::/125
+        routingViaHost: false
 ```
 
 ---
@@ -221,77 +282,15 @@ spec:
 
 * Multus log:
 
-```
-2025-04-19T19:19:58Z [verbose] ADD starting CNI request ContainerID:"663af540f32650814f06579e37f2a59505d8285ff4beb60f2ae905a5cbf4ec30" Netns:"/var/run/netns/42c19e0e-af60-4d5b-8714-9c446ab8ac83" IfName:"eth0" Args:"IgnoreUnknown=1;K8S_POD_NAMESPACE=demo-udn-2;K8S_POD_NAME=virt-launcher-fedora-black-elephant-21-msldg;K8S_POD_INFRA_CONTAINER_ID=663
-af540f32650814f06579e37f2a59505d8285ff4beb60f2ae905a5cbf4ec30;K8S_POD_UID=526e5f4e-f646-4aec-b3f6-1f9ccc33f330" Path:""
-2025-04-19T19:19:59Z [verbose] Add: demo-udn-2:virt-launcher-fedora-black-elephant-21-msldg:526e5f4e-f646-4aec-b3f6-1f9ccc33f330:ovn-kubernetes(ovn-kubernetes):eth0 {"cniVersion":"0.4.0","interfaces":[{"name":"663af540f326508","mac":"f6:f5:bc:30:ee:d3"},{"name":"eth0","mac":"0a:58:0a:80:00:ba","sandbox":"/var/run/netns/42c19e0e-af60-4d5b-8714-9c4
-46ab8ac83"},{"name":"663af540f3265_3","mac":"8e:83:e5:4a:83:a9"},{"name":"ovn-udn1","mac":"0a:58:c0:a8:de:03","sandbox":"/var/run/netns/42c19e0e-af60-4d5b-8714-9c446ab8ac83"}],"ips":[{"version":"4","interface":1,"address":"10.128.0.186/23"},{"version":"4","interface":3,"address":"192.168.222.3/24","gateway":"192.168.222.1"}],"dns":{}}
-I0419 19:19:59.545551    7342 event.go:364] Event(v1.ObjectReference{Kind:"Pod", Namespace:"demo-udn-2", Name:"virt-launcher-fedora-black-elephant-21-msldg", UID:"526e5f4e-f646-4aec-b3f6-1f9ccc33f330", APIVersion:"v1", ResourceVersion:"48371528", FieldPath:""}): type: 'Normal' reason: 'AddedInterface' Add eth0 [10.128.0.186/23 192.168.222.3/24] f
-rom ovn-kubernetes
-2025-04-19T19:20:00Z [verbose] Add: demo-udn-2:virt-launcher-fedora-black-elephant-21-msldg:526e5f4e-f646-4aec-b3f6-1f9ccc33f330:demo-udn-2/secondary-udn(demo-udn-2_secondary-udn):podc00fa7e7651 {"cniVersion":"1.0.0","interfaces":[{"mac":"8a:16:eb:9a:28:6b","name":"663af540f3265_4"},{"mac":"02:86:5e:00:00:0a","name":"podc00fa7e7651","sandbox":"/v
-ar/run/netns/42c19e0e-af60-4d5b-8714-9c446ab8ac83"}],"ips":[{"address":"10.2.2.1/24","interface":1}]}                                                                                                                                                                                                                                                       I0419 19:20:00.352145    7342 event.go:364] Event(v1.ObjectReference{Kind:"Pod", Namespace:"demo-udn-2", Name:"virt-launcher-fedora-black-elephant-21-msldg", UID:"526e5f4e-f646-4aec-b3f6-1f9ccc33f330", APIVersion:"v1", ResourceVersion:"48371528", FieldPath:""}): type: 'Normal' reason: 'AddedInterface' Add podc00fa7e7651 [10.2.2.1/24] from demo-udn-2/secondary-udn
-```
 
 ---
 
 * Pod annotations
 
 ```json
-oc get pods -n demo-udn-2 virt-launcher-fedora-black-elephant-21-msldg -o json | jq -r  '.metadata.annotations."k8s.ovn.org/pod-networks"' | jq -s
-[
-  {
-    "default": {
-      "ip_addresses": [
-        "10.128.0.186/23"
-      ],
-      "mac_address": "0a:58:0a:80:00:ba",
-      "routes": [
-        {
-          "dest": "10.128.0.0/14",
-          "nextHop": "10.128.0.1"
-        },
-        {
-          "dest": "100.64.0.0/16",
-          "nextHop": "10.128.0.1"
-        }
-      ],
-      "ip_address": "10.128.0.186/23",
-      "role": "infrastructure-locked"
-    },
-    "demo-udn-2/primary-udn": {
-      "ip_addresses": [
-        "192.168.222.3/24"
-      ],
-      "mac_address": "0a:58:c0:a8:de:03",
-      "gateway_ips": [
-        "192.168.222.1"
-      ],
-      "routes": [
-        {
-          "dest": "172.30.0.0/16",
-          "nextHop": "192.168.222.1"
-        },
-        {
-          "dest": "100.65.0.0/16",
-          "nextHop": "192.168.222.1"
-        }
-      ],
-      "ip_address": "192.168.222.3/24",
-      "gateway_ip": "192.168.222.1",
-      "tunnel_id": 9,
-      "role": "primary"
-    },
-    "demo-udn-2/secondary-udn": {
-      "ip_addresses": [
-        "10.2.2.1/24"
-      ],
-      "mac_address": "02:86:5e:00:00:0a",
-      "ip_address": "10.2.2.1/24",
-      "tunnel_id": 4,
-      "role": "secondary"
-    }
-  }
-]
+oc get pods -n demo-udn-2 virt-launcher-fedora-black-elephant-21-msldg -o json \
+  | jq -r  '.metadata.annotations."k8s.ovn.org/pod-networks"' | jq -s
+...
 ```
 
 ---
