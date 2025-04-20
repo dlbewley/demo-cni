@@ -1,0 +1,98 @@
+/* palette-3.css */
+@import "https://unpkg.com/@marp-team/marp-core@latest/themes/default.css";
+
+/* Slide-level overrides */
+section {
+  /* Core palette */
+  --color-primary:        #316DC1;  /* rich blue */
+  --color-secondary:      #A7C0E4;  /* sky blue */
+  --color-tertiary:       #5F0000;  /* dark maroon */
+  --color-quaternary:     #EE0000;  /* vivid red */
+
+  /* Background & text */
+  --backgroundColor:      #E2EAF6;  /* pale sky */
+  --textColor:            #261A4C;  /* deep indigo */
+
+  /* Links */
+  --linkColor:            #A7C0E4;  /* sky blue */
+
+  /* Headings */
+  --headingColor:         var(--color-primary);
+
+  /* Blockquotes */
+  --blockquoteBackgroundColor: #FDDBDB; /* soft blush */
+  --blockquoteBorderColor:     var(--color-tertiary);
+  --blockquoteTextColor:       var(--textColor);
+
+  /* Code blocks */
+  --code-block-background:     #FDDBDB;
+  --code-block-border:         #F56D6D;  /* coral */
+
+  /* Tables */
+  --tableBorderColor:          var(--color-primary);
+  --tableHeaderBackgroundColor:#A7C0E4;
+  --tableRowEvenBackgroundColor: #FDDBDB;
+}
+
+/* Fine‐tuning some elements */
+h1, h2, h3, h4, h5, h6 {
+  color: var(--headingColor);
+}
+
+a {
+  color: var(--linkColor);
+}
+
+strong {
+  color: var(--color-quaternary);
+}
+
+em {
+  color: var(--color-tertiary);
+}
+  
+/* Code blocks */
+pre {
+  background-color: var(--code-block-background);
+  border: 1px solid var(--code-block-border);
+  color: var(--textColor);
+}
+
+code {
+  background-color: var(--code-block-background);
+  border: 1px solid var(--code-block-border);
+  color: var(--textColor);
+  font-size: 0.85em;
+}
+
+section.bg-secondary {
+  /* uses your “secondary” variable */
+  background-color: var(--color-secondary);
+  color: var(--textColor);
+}
+section.bg-tertiary {
+  /* uses your “secondary” variable */
+  background-color: var(--color-tertiary);
+  color: var(--textColor);
+}
+section.bg-quaternary {
+  /* uses your “secondary” variable */
+  background-color: var(--color-quaternary);
+  color: var(--textColor);
+}
+/* utility classes for scaling slide text */
+section.font-sm {
+  font-size: 0.85em;
+}
+
+section.font-xs {
+  font-size: 0.75em;
+}
+
+section.font-xxs {
+  font-size: 0.65em;
+}
+
+font-xxs {
+  font-size: 0.65em;
+}

@@ -1,0 +1,84 @@
+---
+# VM attached to default cluster network
+apiVersion: kubevirt.io/v1
+kind: VirtualMachine
+metadata:
+  name: vm-on-cluster-network
+spec:
+  template:
+    spec:
+      domain:
+        devices:
+          interfaces:
+            - macAddress: '02:86:5e:00:00:07'
+              masquerade: {}
+              model: virtio
+              name: default
+      networks:
+        - name: default
+          pod: {}        
+---
+# VM attached to primary UDN
+apiVersion: kubevirt.io/v1
+kind: VirtualMachine
+metadata:
+  name: vm-on-primary-udn
+spec:
+  template:
+    spec:
+      domain:
+        devices:
+          interfaces:
+            - binding:
+                name: l2bridge
+              model: virtio
+              name: default      
+      networks:
+        - name: default
+          pod: {}        
+---
+# VM attached to default cluster network and secondary network
+apiVersion: kubevirt.io/v1
+kind: VirtualMachine
+metadata:
+  name: vm-on-cluster-network
+spec:
+  template:
+    spec:
+      domain:
+        devices:
+          interfaces:
+            - macAddress: '02:86:5e:00:00:07'
+              masquerade: {}
+              model: virtio
+              name: default
+      networks:
+        - name: default
+          pod: {}       
+---
+# VM attached to primary UDN and secondary UDN
+apiVersion: kubevirt.io/v1
+kind: VirtualMachine
+metadata:
+  name: vm-on-primary-udn
+spec:
+  template:
+    spec:
+      domain:
+        devices:
+          interfaces:
+            - binding:
+                name: l2bridge
+              model: virtio
+              name: default
+            - bridge: {}
+              macAddress: '02:86:5e:00:00:0a'
+              model: virtio
+              name: nic-secondary-udn
+      networks:
+        - name: default
+          pod: {}        
+        - multus:
+            networkName: secondary-udn
+          name: nic-secondary-udn
+---
