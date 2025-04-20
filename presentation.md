@@ -34,10 +34,6 @@ class: font-xs
 ---
 ## Multus architecture
 
-```bash
-cat foo.sh
-```
-
 ---
 
 ## Bridge plugin deep dive (config + demo)
@@ -56,6 +52,7 @@ cat foo.sh
 * 
 ---
 <!-- class: invert -->
+<!-- header: Cluster Network -->
 ### VM Examples - Cluster Network
 
 By default all VMs have the same address internally but masquerade using the pod IP. NAT happens on egress and selectively on ingress using Kubernetes Services.
@@ -123,7 +120,7 @@ default via 10.0.2.1 dev eth0 proto dhcp src 10.0.2.2 metric 100
 ```
 
 ---
-# Default Cluster Network 
+# VM on Default Cluster Network 
 
 ## Interfaces
 
@@ -139,6 +136,7 @@ default via 10.0.2.1 dev eth0 proto dhcp src 10.0.2.2 metric 100
 
 ---
 <!-- _class: invert -->
+<!-- header: Primary User Defined Network -->
 ### VM Examples - Primary UDN
 In this example all VMs have the same address internally and masquerade using the pod IP on egress.
 ```yaml
@@ -207,8 +205,7 @@ default via 10.1.1.1 dev eth0 proto dhcp src 10.1.1.3 metric 100
 10.1.1.0/24 dev eth0 proto kernel scope link src 10.1.1.3 metric 100 
 ```
 ---
-# Primary User Defined Network 
-
+# VM on Primary User Defined Network 
 
 ## Interfaces
 
@@ -247,6 +244,7 @@ spec:
 
 ---
 <!-- _class: invert -->
+<!-- header: Primary & Secondary User Defined Networks -->
 ### VM Examples - Primary and Secondary UDN
 
 ```yaml
