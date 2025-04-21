@@ -104,7 +104,9 @@ k6t-eth0         UP             10.0.2.1/24
 ```
 ---
 #### Virtual Machine
-Ethernet interface in the VM _always_ has IP `10.0.2.2/24`. Masquerades as pod IP `10.131.1.97/23` above.
+
+* VM _always_ has IP `10.0.2.2/24`. 
+* Masquerades as pod IP `10.131.1.97/23` above.
 
 ```bash
 [cloud-user@vm-pod ~]$ ip -c link
@@ -237,12 +239,12 @@ default via 10.1.1.1 dev eth0 proto dhcp src 10.1.1.3 metric 100
 
 ## Summary
 
-### Virt-launcher Pods
+### Virt-launcher Pod
 * Two ethernet interfaces
 * eth0@if356 is on infrastructure locked cluster network `10.128.0.0/14`
 * ovn-udn1 is on primary UDN `10.1.1.3/24`
 
-### VirtualMachines
+### Virtual Machine
 * eth0 has unique IP `10.1.1.3/24` from primary UDN of this Namespace
 * Default gateway is `10.1.1.1`
 * Masquerades at UDN gateway rotuer as the IP from `169.254.0.0/17` associated with the UDN
@@ -414,6 +416,132 @@ default via 10.1.1.1 dev eth0 proto dhcp src 10.1.1.3 metric 100
 * Masquerades at UDN gateway rotuer as the IP from `169.254.0.0/17` associated with the UDN
 * Masquerades at node edge as IP of node default interface `br-ex`
 
+
+---
+<!-- _class: invert -->
+<!-- header: Secondary Network Localnet -->
+<style scoped>  { columns: 2; } </style>
+
+### VM Examples - Localnet Secondary 
+
+#### VMs directly attached to secondary 
+
+Net-attach-def only (UDN coming soon)
+
+```yaml
+apiVersion: k8s.cni.cncf.io/v1
+kind: NetworkAttachmentDefinition
+metadata:
+  name: demo-vlan-1924
+spec:
+  config: |-
+    {
+    "cniVersion": "0.4.0", 
+    "name": "demo-vlan-1924",
+    "type": "ovn-k8s-cni-overlay", 
+    "topology": "localnet", 
+    "netAttachDefName": "demo-vm-localnet/demo-vlan-1924",
+    "vlanID": 1924,
+    "ipam": {}
+    }
+```
+
+```yaml
+# VM attached to secondary localnet
+apiVersion: kubevirt.io/v1
+kind: VirtualMachine
+metadata:
+  name: vm-on-primary-udn
+spec:
+  template:
+    spec:
+      domain:
+        devices:
+          interfaces:
+            - macAddress: '02:86:5e:00:00:13'
+              masquerade: {}
+              model: virtio
+              name: default
+            - bridge: {}
+              macAddress: '02:86:5e:00:00:14'
+              model: virtio
+              name: nic-vlan-1924
+      networks:
+        - name: default
+          pod: {}
+        - multus:
+            networkName: demo-vlan-1924
+          name: nic-vlan-1924
+```
+
+---
+<!-- class: default -->
+#### Virt-Launcher Pod
+
+```bash
+sh-5.1$ ip -c link
+1: lo: <LOOPBACK,UP,LOWER_UP> mtu 65536 qdisc noqueue state UNKNOWN mode DEFAULT group default qlen 1000
+    link/loopback 00:00:00:00:00:00 brd 00:00:00:00:00:00
+2: eth0@if607: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1400 qdisc noqueue state UP mode DEFAULT group default
+    link/ether 0a:58:0a:83:00:54 brd ff:ff:ff:ff:ff:ff link-netnsid 0
+3: 16711a0a730-nic@if608: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1400 qdisc noqueue master k6t-16711a0a730 state UP mode DEFAULT group default
+    link/ether 12:6f:ef:f4:36:9a brd ff:ff:ff:ff:ff:ff link-netnsid 0
+4: k6t-eth0: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1400 qdisc noqueue state UP mode DEFAULT group default qlen 1000
+    link/ether 02:00:00:00:00:00 brd ff:ff:ff:ff:ff:ff
+5: tap0: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1400 qdisc fq_codel master k6t-eth0 state UP mode DEFAULT group default qlen 1000
+    link/ether 8a:47:bc:d4:8b:d0 brd ff:ff:ff:ff:ff:ff
+6: k6t-16711a0a730: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1400 qdisc noqueue state UP mode DEFAULT group default qlen 1000
+    link/ether 12:6f:ef:f4:36:9a brd ff:ff:ff:ff:ff:ff
+7: tap16711a0a730: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1400 qdisc fq_codel master k6t-16711a0a730 state UP mode DEFAULT group default qlen 1000
+    link/ether 7a:f1:ab:eb:e9:e1 brd ff:ff:ff:ff:ff:ff
+8: pod16711a0a730: <BROADCAST,NOARP> mtu 1400 qdisc noop state DOWN mode DEFAULT group default qlen 1000
+    link/ether 02:86:5e:00:00:16 brd ff:ff:ff:ff:ff:ff
+
+sh-5.1$ ip -br -c -4 a
+lo               UNKNOWN        127.0.0.1/8
+eth0@if607       UP             10.131.0.84/23
+k6t-eth0         UP             10.0.2.1/24
+```
+---
+#### Virtual Machine
+
+```bash
+[cloud-user@vm-localnet ~]$ ip -c link
+1: lo: <LOOPBACK,UP,LOWER_UP> mtu 65536 qdisc noqueue state UNKNOWN mode DEFAULT group default qlen 1000
+    link/loopback 00:00:00:00:00:00 brd 00:00:00:00:00:00
+2: eth0: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1400 qdisc fq_codel state UP mode DEFAULT group default qlen 1000
+    link/ether 02:86:5e:00:00:15 brd ff:ff:ff:ff:ff:ff
+    altname enp1s0
+3: eth1: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1400 qdisc fq_codel state UP mode DEFAULT group default qlen 1000
+    link/ether 02:86:5e:00:00:16 brd ff:ff:ff:ff:ff:ff
+    altname enp2s0
+
+[cloud-user@vm-localnet ~]$ ip -br -c -4 a
+lo               UNKNOWN        127.0.0.1/8
+eth0             UP             10.0.2.2/24
+eth1             UP             192.168.4.71/24
+
+[cloud-user@vm-localnet ~]$ ip -c route
+default via 10.0.2.1 dev eth0 proto dhcp src 10.0.2.2 metric 100
+default via 192.168.4.1 dev eth1 proto dhcp src 192.168.4.71 metric 101
+10.0.2.0/24 dev eth0 proto kernel scope link src 10.0.2.2 metric 100
+192.168.4.0/24 dev eth1 proto kernel scope link src 192.168.4.71 metric 101
+```
+---
+# VM on Localnet
+
+## Summary
+
+### Virt-launcher Pods
+* eth0@if607 is on infrastructure locked cluster network `10.128.0.0/14`
+* ovn-udn1 is on primary UDN `10.1.1.3/24`
+* pod2eae7330186 is on secondary UDN `10.2.2.1/24`
+
+### VirtualMachines
+* eth0 is always IP `10.0.2.2/24`
+* Default gateway is always `10.0.2.1` on virt-launcher
+* Masquerades at node edge as IP of node default interface `br-ex`
+* eth1 is `192.168.4.71/24` from DHCP on datacenter VLAN 1924
 
 ---
 * Multus log:
