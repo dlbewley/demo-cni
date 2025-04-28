@@ -1,58 +1,182 @@
 ---
 marp: true
-theme: default
+# theme: neobeam
+# theme: default
+# theme: palette-3
+theme: mylogo
 paginate: true
+html: true
+build-multiplier: 1 # this fixes PDF gen with neobeam theme
 size: 4k
-class: font-xs
 ---
 <!-- _paginate: skip -->
-<!-- _footer: _Dale Bewley_ -->
+<!-- _ffffooter: _[Dale Bewley](www.linkedin.com/in/dalebewley) - <https://github.com/dlbewley/demo-cni/>_ -->
+<!-- _class: title invert -->
+<!-- _footer: '[github.com/dlbewley/demo-cni](https://github.com/dlbewley/demo-cni/)' -->
+![bg grayscale opacity:20%](img/openshift.png)
+# OpenShift Virtualization VM Networking
 
-# Deep dive into [CNI](https://cni.dev/)
+### Dale Bewley
+
+> ### Specialist SA
+> NA West OpenShift 🐯 Team
+> Red Hat
+
+
+![logo Logo](img/logo.png)
+---
+<!-- footer: '**[Dale Bewley](www.linkedin.com/in/dalebewley)**
+         **|**
+         **[github.com/dlbewley/demo-cni](https://github.com/dlbewley/demo-cni/)**' -->
 
 ---
 <!-- paginate: true -->
-# Presentation Outline
-## Intro & objectives
+<!-- class: icon -->
+<!-- header: CNI -->
+<style scoped>
+  section {columns: 2; 
+  column-rule: 1px solid #ccc; }
+  p, h1, h2 { column-span: all; }
+</style>
+
+# Multus Meta CNI Plugin
+> The CNI used by OpenShift
+> Is a meta-plugin which executes other plugins
+
+Creates the interfaces in the pod used by the VM
+
+![logo Kubevirt](img/multus.png)
 
 ---
-## CNI spec & OVN‑Kubernetes overview
+<!-- class: icon -->
+<style scoped>
+  section {columns: 2; 
+  column-rule: 1px solid #ccc; }
+  p, h1, h2 { column-span: all; }
+</style>
 
-### 2. OVN–Kubernetes (Primary CNI)
+# Container Network Interface
 
-* **ovn‑kubernetes GitHub**  
-  * Website: [ovn-kubernetes.io/](https://ovn-kubernetes.io/)
-  * Repo: [ovn-org/ovn-kubernetes](https://github.com/ovn-org/ovn-kubernetes)  
-  * Core repo for the OVN–Kubernetes integration: CNI binaries, controllers, docs.  
-* **OpenShift OVN‑Kubernetes Guide**  
-  * Docs: [OpenShift Container Platform Networking – OVN‑Kubernetes](https://docs.redhat.com/en/documentation/openshift_container_platform/4.18/html/networking/index)
-  * Red Hat's overview of
+CNI Plugins enable pod network configuration 
+
+```json
+{
+    "cniVersion": "0.3.1",
+    "name": "mynet",
+    "type": 🔌 <plugin>
+    <parameters>...
+}
+```
+
+### 🔌 Bridge
+### 🔌 ovn-k8s-cni-overlay
+### 🔌 SR-IoV
+### 🔌 ...
+
+![logo Kubevirt](img/cni.png)
 
 ---
-## Multus architecture
+<style scoped>
+  section { columns: 2; 
+  column-rule: 1px solid #ccc; }
+  p, h1, h2 { column-span: all; }
+</style>
+
+## 🔌 CNI Plugins
+
+There are many plugins and they may be chained by Multus
+
+```bash
+$ oc rsh -n openshift-multus \
+  multus-2tt2c \
+  ls -1 /var/lib/cni/bin
+bandwidth
+bond
+bridge
+cert-approver
+cnv-bridge
+cnv-tuning
+dhcp
+dummy
+egress-router
+firewall
+```
+
+```bash
+host-device
+host-local
+install_multus
+ip-control-loop
+ipvlan
+kubeconfig_generator
+loopback
+macvlan
+multus
+multus-daemon
+multus-shim
+network-passt-binding
+ovn-k8s-cni-overlay
+...
+```
 
 ---
 
-## Bridge plugin deep dive (config + demo)
+### 🔌 [Bridge](https://www.cni.dev/plugins/current/main/bridge/) Plugin
+
+> Don't use cnv-bridge, use bridge. They are identical.
+
+Bridge can be used to attach to a Linux Bridge which may enable VLAN access or [VGT](https://guifreelife.com/blog/2025/01/02/OpenShift-Virtualization-VLAN-Guest-Tagging/)
+
+```json
+{
+    "cniVersion": "0.3.1",
+    "name": "mynet",
+    "type": "bridge",
+    ...
+}
+```
 
 ---
-## MAC VLAN plugin deep dive
+<!-- class: icon -->
+
+### 🔌 ovn-k8s-cni-overlay Plugin
+
+```json
+{
+    "cniVersion": "0.3.1",
+    "name": "mynet",
+    "type": <plugin>
+    ...
+}
+```
+
+![logo Kubevirt](img/ovn-kubernetes.png)
+
 
 ---
-## Debugging tools & workflows
+<!-- class: icon -->
+<!-- header: Agenda -->
+<style scoped>
+  section {columns: 2; 
+  column-rule: 1px solid #ccc; }
+  p, h1, h2 { column-span: all; }
+</style>
+> Discussion of network attachments available for Virtual Machines on OpenShift with example implementations
+
+# KubeVirt Interfaces and Networks
+### 🛜 Primary Cluster Network
+### 🛜 Primary User Defined Networks  
+### 🛜 Secondary Localnet (VLANs)
+### 🛜 Secondary User Defined Networks  
+
+![logo Kubevirt](img/kubevirt.png)
 
 ---
-## KubeVirt Interfaces and Networks
-
-* Masquerade on Cluster Network
-* L2 Bridge on Primary User Defined Network
-* 
----
-<!-- class: invert -->
+<!-- class: invert icon -->
 <!-- header: Cluster Network -->
-<style scoped>  { columns: 2; } </style>
+<style scoped> section { columns: 2; } </style>
 
-### VM Examples - Cluster Network
+# VM Examples - Cluster Network
 
 All VMs have the same address internally and masquerade using the pod IP.
 
@@ -77,7 +201,8 @@ spec:
         - name: default
           pod: {}        
 ```
-</div>
+
+![logo Kubevirt](img/kubevirt.png)
 
 ---
 <!-- class: default -->
@@ -85,6 +210,8 @@ spec:
 Two ethernet interfaces in the virt launcher pod. 
 * Infrastructure locked `10.128.0.0/14` cluster network 
 * Always on `10.0.2.1/24`
+* `k6t-eth0` short for `kubevirt-eth0` is a bridge enslaving `tap0`
+* `tap0` is passed to QEMU for `eth0` in the VM
 
 ```bash
 sh-5.1$ ip -c link
@@ -143,13 +270,15 @@ default via 10.0.2.1 dev eth0 proto dhcp src 10.0.2.2 metric 100
 ---
 <!-- _class: invert -->
 <!-- header: Primary User Defined Network -->
-<style scoped>  { columns: 2; } </style>
+<style scoped>
+section { columns: 2; }
+ h1 { column-span: all; }
+</style>
+# VM Examples - Primary UDN
 
-### VM Examples - Primary UDN
+## VMs have unique IPs from UDN subnet
 
-#### VMs have unique IPs from UDN subnet
-
-Layer2 topology only (`localnet` soon)
+Only Layer2 topology is supported (`localnet` soon)
 
 ```yaml
 apiVersion: k8s.ovn.org/v1
@@ -164,7 +293,15 @@ spec:
     subnets:
       - 10.1.1.0/24
 ```
-
+---
+<!-- _class: invert icon -->
+<!-- header: Primary User Defined Network -->
+<style scoped>
+  section {columns: 2; 
+  column-rule: 1px solid #ccc; }
+ h1 { column-span: all; }
+</style>
+...continued
 ```yaml
 # VM attached to primary UDN
 apiVersion: kubevirt.io/v1
@@ -185,6 +322,8 @@ spec:
         - name: default
           pod: {}        
 ```
+
+![logo Kubevirt](img/kubevirt.png)
 
 ---
 <!-- class: default -->
@@ -235,11 +374,9 @@ default via 10.1.1.1 dev eth0 proto dhcp src 10.1.1.3 metric 100
 10.1.1.0/24 dev eth0 proto kernel scope link src 10.1.1.3 metric 100 
 ```
 ---
-# VM on Primary User Defined Network 
+## VM on Primary User Defined Network 
 
-## Summary
-
-### Virt-launcher Pod
+### Virt-Launcher Pod
 * Two ethernet interfaces
 * eth0@if356 is on infrastructure locked cluster network `10.128.0.0/14`
 * ovn-udn1 is on primary UDN `10.1.1.3/24`
@@ -250,9 +387,9 @@ default via 10.1.1.1 dev eth0 proto dhcp src 10.1.1.3 metric 100
 * Masquerades at UDN gateway rotuer as the IP from `169.254.0.0/17` associated with the UDN
 * Masquerades at node edge as IP of node default interface `br-ex`
 ---
-
+<style scoped>section {columns: 2;}</style>
 ## Masquerade Subnet
-Each UDN has two IPs allocated from the masquerade subnet.
+Each UDN has two IPs allocated from the masquerade subnet `169.254.0.0/17`.
 ```yaml
 # oc get network.operator/cluster -o yaml
 apiVersion: operator.openshift.io/v1
@@ -275,8 +412,11 @@ spec:
 ---
 <!-- _class: invert -->
 <!-- header: Primary & Secondary User Defined Networks -->
-<style scoped>  { columns: 2; } </style>
-### VM Examples - Primary and Secondary UDN
+<style scoped>
+  section  { columns: 2; }
+  h1 { column-span: all; }
+</style>
+# VM Examples - Primary and Secondary UDN
 
 ```yaml
 apiVersion: k8s.ovn.org/v1
@@ -306,11 +446,10 @@ spec:
       - 10.2.2.0/24
 ```
 ---
-<!-- _class: invert -->
+<!-- _class: invert icon -->
 <!-- header: Primary & Secondary User Defined Networks -->
 <style scoped>  { columns: 2; } </style>
-### VM Examples - Primary and Secondary UDN
-
+...continued
 
 ```yaml
 # VM attached to primary UDN and secondary UDN
@@ -340,9 +479,11 @@ spec:
           name: secondary-udn
 ```
 
+![logo Kubevirt](img/kubevirt.png)
+
 ---
 <!-- class: default -->
-#### Virt-Launcher Pod
+## Virt-Launcher Pod
 
 ```bash
 sh-5.1$ ip -c link
@@ -375,7 +516,7 @@ k6t-2eae7330186  UP             169.254.75.11/32
 pod2eae7330186   DOWN           10.2.2.1/24 
 ```
 ---
-#### Virtual Machine
+## Virtual Machine
 
 ```bash
 [cloud-user@vm-secondary-udn ~]$ ip -c link
@@ -399,34 +540,40 @@ default via 10.1.1.1 dev eth0 proto dhcp src 10.1.1.3 metric 100
 10.2.2.0/24 dev eth1 proto kernel scope link src 10.2.2.1 metric 101
 ```
 ---
-# VM on Primary & Secondary User Defined Network 
+<style scoped> section {  font-size: 150%; /* or smaller */ } </style>
+## Summary VM on Primary & Secondary User Defined Network 
 
-## Summary
-
-### Virt-launcher Pods
+### Virt-Launcher Pod
 * Three ethernet interfaces
 * eth0@if412 is on infrastructure locked cluster network `10.128.0.0/14`
 * ovn-udn1 is on primary UDN `10.1.1.3/24`
 * pod2eae7330186 is on secondary UDN `10.2.2.1/24`
 
-### VirtualMachines
+### Virtual Machine
 * eth0 has unique IP `10.1.1.3/24` from primary UDN of this Namespace
 * eth1 has unique IP `10.2.2.1/24` from secondary UDN of this Namespace
 * Default gateway is `10.1.1.1`
-* Masquerades at UDN gateway rotuer as the IP from `169.254.0.0/17` associated with the UDN
+* Masquerades at UDN gateway router as the IP from `169.254.0.0/17` for the UDN
 * Masquerades at node edge as IP of node default interface `br-ex`
 
 
 ---
-<!-- _class: invert -->
+<!-- _class: invert icon -->
 <!-- header: Secondary Network Localnet -->
-<style scoped>  { columns: 2; } </style>
+<style scoped>
+  section  {
+    font-size: 1.20em;
+    columns: 2;
+    }
+  h1 { column-span: all; }
+</style>
 
-### VM Examples - Localnet Secondary 
+# VM Examples - Localnet Secondary 
 
-#### VMs directly attached to secondary 
+## VMs directly attached to secondary 
 
-Net-attach-def only (UDN coming soon)
+No UDN support for localnet topology yet.
+Net-attach-def only.
 
 ```yaml
 apiVersion: k8s.cni.cncf.io/v1
@@ -451,7 +598,7 @@ spec:
 apiVersion: kubevirt.io/v1
 kind: VirtualMachine
 metadata:
-  name: vm-on-primary-udn
+  name: vm-localnet
 spec:
   template:
     spec:
@@ -474,9 +621,11 @@ spec:
           name: nic-vlan-1924
 ```
 
+![logo Kubevirt](img/kubevirt.png)
+
 ---
 <!-- class: default -->
-#### Virt-Launcher Pod
+### Virt-Launcher Pod
 
 ```bash
 sh-5.1$ ip -c link
@@ -503,7 +652,7 @@ eth0@if607       UP             10.131.0.84/23
 k6t-eth0         UP             10.0.2.1/24
 ```
 ---
-#### Virtual Machine
+### Virtual Machine
 
 ```bash
 [cloud-user@vm-localnet ~]$ ip -c link
@@ -528,36 +677,34 @@ default via 192.168.4.1 dev eth1 proto dhcp src 192.168.4.71 metric 101
 192.168.4.0/24 dev eth1 proto kernel scope link src 192.168.4.71 metric 101
 ```
 ---
-# VM on Localnet
+## Summary VM on Localnet
+### Virt-launcher Pod
+* eth0@if607 is on the cluster network `10.128.0.0/14`
+* tap0 is passed to QEMU for eth0
+* tap16711a0a730 is passed to QEMU for eth1
 
-## Summary
-
-### Virt-launcher Pods
-* eth0@if607 is on infrastructure locked cluster network `10.128.0.0/14`
-* ovn-udn1 is on primary UDN `10.1.1.3/24`
-* pod2eae7330186 is on secondary UDN `10.2.2.1/24`
-
-### VirtualMachines
+### Virtual Machine
 * eth0 is always IP `10.0.2.2/24`
 * Default gateway is always `10.0.2.1` on virt-launcher
 * Masquerades at node edge as IP of node default interface `br-ex`
 * eth1 is `192.168.4.71/24` from DHCP on datacenter VLAN 1924
 
 ---
-* Multus log:
-
-
----
-
-* Pod annotations
-
-```json
-oc get pods -n demo-udn-2 virt-launcher-fedora-black-elephant-21-msldg -o json \
-  | jq -r  '.metadata.annotations."k8s.ovn.org/pod-networks"' | jq -s
-...
-```
-
----
+<!-- header: '' -->
 ## Q&A / further reading
 
 * [CNI Spec](https://github.com/containernetworking/cni/blob/main/SPEC.md)
+---
+# References
+## CNI spec & OVN‑Kubernetes overview
+
+### 2. OVN–Kubernetes (Primary CNI)
+
+* **ovn‑kubernetes GitHub**  
+  * Website: [ovn-kubernetes.io/](https://ovn-kubernetes.io/)
+  * Repo: [ovn-org/ovn-kubernetes](https://github.com/ovn-org/ovn-kubernetes)  
+  * Core repo for the OVN–Kubernetes integration: CNI binaries, controllers, docs.  
+* **OpenShift OVN‑Kubernetes Guide**  
+  * Docs: [OpenShift Container Platform Networking – OVN‑Kubernetes](https://docs.redhat.com/en/documentation/openshift_container_platform/4.18/html/networking/index)
+  * Red Hat's overview of
+

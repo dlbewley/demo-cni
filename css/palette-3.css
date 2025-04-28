@@ -1,5 +1,34 @@
+/*!
+ * Palette 3 - A modern take on LaTeX beamer | Default
+ *
+ * @theme palette-3
+ * @author Embracket / mikael-ros
+ *
+ * @auto-scaling true
+ * @size 16:9 1920px 1090px
+ * @size 4:3 960px 720px
+ */
 /* palette-3.css */
-@import "https://unpkg.com/@marp-team/marp-core@latest/themes/default.css";
+@import "default";
+
+/* Logo */
+section.title img[alt*="logo"] {
+  --offset: -5%;
+  --rotate: 0deg;
+
+  /* Position in lower right, by default */
+  position: absolute;
+  margin: 0;
+  right:  var(--offset);
+  bottom: 0;
+
+  width: 350px;
+  object-fit: contain;
+
+  /* Rotate it slightly */
+  transform: rotate(var(--rotate));
+  opacity: 0.5;
+}
 
 /* Slide-level overrides */
 section {
@@ -95,4 +124,19 @@ section.font-xxs {
 
 font-xxs {
   font-size: 0.65em;
+}
+
+.container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+
+.container {
+  display: flex;
+}
+.col {
+  flex: 1;
 }

@@ -1,0 +1,27 @@
+apiVersion: nmstate.io/v1
+kind: NodeNetworkConfigurationPolicy
+metadata:
+  name: br-storage-4
+spec:
+  desiredState:
+    interfaces:
+    - ipv4:
+        enabled: false
+      ipv6:
+        enabled: false
+      name: ens224
+      state: up
+      type: ethernet
+    - bridge:
+        allow-extra-patch-ports: true
+        options:
+          stp: false
+        port:
+        - name: ens224
+      description: |-
+        Test adding a second ovs bridge to an interface
+      name: br-storage
+      state: absent
+      type: ovs-bridge
+  nodeSelector:
+    kubernetes.io/hostname: worker-4

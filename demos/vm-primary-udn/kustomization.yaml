@@ -28,7 +28,8 @@ patches:
         path: /spec/RunStrategy
         value: RerunOnFailure
 
-      # convert default interface from masquerade to bridge 
+      # convert default interface from cluster network masquerade
+      # to primary udn bridge
       - op: replace
         path: /spec/template/spec/domain/devices/interfaces/0
         value: {

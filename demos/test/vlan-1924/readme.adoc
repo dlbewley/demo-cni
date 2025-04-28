@@ -1,0 +1,5 @@
+= VLAN-1924 Net-Attach-Def
+
+Assumes hypervisors have a bridge called br-vmdata.
+
+Creates a namespaced NetworkAttachmentDefinition of type bridge to enabled accessing VLAN ID 1924 from br-vmdata. Use 'default' namespace to make NAD visible to all projects

@@ -1,0 +1,39 @@
+---
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+namespace: demo-vm-localnet
+
+#resources:
+  #  - namespace.yaml
+
+components:
+  - vlan-1924
+  - ../components/vm
+
+patches:
+  - target:
+      group: kubevirt.io
+      kind: VirtualMachine
+      name: .*
+      version: v1
+    patch: |-
+      # rename VM
+      - op: replace
+        path: /metadata/name
+        value: vm-localnet-storage
+      - op: add
+        path: /spec/template/spec/domain/devices/interfaces/-
+        value: {
+          "name": "nic-vlan-1924",
+          "bridge": {},
+          "model": "virtio"
+        }
+      - op: add
+        path: /spec/template/spec/networks/-
+        value: {
+          "name": "nic-vlan-1924",
+          "multus": {
+            "networkName": "storage-vlan-1924"
+          }
+        }

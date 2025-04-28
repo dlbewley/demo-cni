@@ -1,0 +1,11 @@
+  {
+      "markdown.marp.themes": [
+          "css/neobeam.css",
+          "css/neobeam-lund.css",
+          "css/neobeam-csek.css",
+          "css/neobeam-dsek.css",
+          "css/neobeam-beamer.css",
+          "css/palette-3.css",
+          "css/mylogo.css",
+      ]
+  }
