@@ -14,6 +14,7 @@
 - **OpenShift OVN‑Kubernetes Guide**  
   - Docs: [OpenShift Container Platform Networking – OVN‑Kubernetes](https://docs.redhat.com/en/documentation/openshift_container_platform/4.18/html/networking/index)
   - Red Hat’s overview of OVN‑powered networking on OpenShift.
+  - Docs: [OVN-Kubernetes default CNI network provider](https://docs.redhat.com/en/documentation/openshift_container_platform/4.8/html/networking/ovn-kubernetes-default-cni-network-provider)
 
 ## Multus CNI (Meta‑Plugin)
 
@@ -49,6 +50,9 @@
 - **Network Operator Docs**  
   - Docs: [Configuring cluster network (Network CR)](https://docs.openshift.com/container-platform/latest/networking/configuring_cluster_network/configuring-cluster-network.html)  
   - How OVN is configured and tuned via the `Network` CR.
+
+- **Network Docs**  
+  - Docs: [Understatnding Multiple Networks](https://docs.redhat.com/en/documentation/openshift_container_platform/4.18/html/networking/multiple-networks#understanding-multiple-networks)
 
 ## KubeVirt Networking
 

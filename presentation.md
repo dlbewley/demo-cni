@@ -121,7 +121,7 @@ ovn-k8s-cni-overlay
 
 ---
 
-### 🔌 [Bridge](https://www.cni.dev/plugins/current/main/bridge/) Plugin
+### 🔌 [bridge](https://www.cni.dev/plugins/current/main/bridge/) Plugin
 
 > Don't use cnv-bridge, use bridge. They are identical.
 
@@ -145,7 +145,8 @@ Bridge can be used to attach to a Linux Bridge which may enable VLAN access or [
 {
     "cniVersion": "0.3.1",
     "name": "mynet",
-    "type": <plugin>
+    "type": "ovn-k8s-cni-overlay",
+    "topology": 🌐 <topology>,
     ...
 }
 ```
@@ -570,9 +571,9 @@ default via 10.1.1.1 dev eth0 proto dhcp src 10.1.1.3 metric 100
 
 # VM Examples - Localnet Secondary 
 
-## VMs directly attached to secondary 
+## VMs directly attached to VLAN
 
-No UDN support for localnet topology yet.
+No UDN support for localnet topology as of 4.18.9.
 Net-attach-def only.
 
 ```yaml
@@ -688,6 +689,24 @@ default via 192.168.4.1 dev eth1 proto dhcp src 192.168.4.71 metric 101
 * Default gateway is always `10.0.2.1` on virt-launcher
 * Masquerades at node edge as IP of node default interface `br-ex`
 * eth1 is `192.168.4.71/24` from DHCP on datacenter VLAN 1924
+
+---
+<!-- _class: invert icon -->
+<!-- header: Secondary UDN Localnet -->
+<style scoped>
+  section  {
+    font-size: 1.20em;
+    columns: 2;
+    }
+  h1 { column-span: all; }
+</style>
+
+# VM Examples - Localnet Secondary UDN
+
+## VMs directly attached to VLAN
+
+### TBD
+⏳ Support for UDN localnet topology is targeted for 4.19.
 
 ---
 <!-- header: '' -->
