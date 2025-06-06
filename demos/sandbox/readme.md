@@ -35,8 +35,10 @@ graph TD;
     end
 
     subgraph Server-1
-        server-1-eth0[eth0<br>10.2.2.10/24]:::interface;
-        server-1-eth0 --> net-2nd
+        server-1-eth0[eth0<br>10.1.1.10/24]:::interface;
+        server-1-eth0 --> net-1st
+        server-1-eth1[eth1<br>10.2.2.10/24]:::interface;
+        server-1-eth1 --> net-2nd
     end
 
     subgraph Server-2
