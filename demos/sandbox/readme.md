@@ -1,6 +1,6 @@
 # WIP
 
-* [networks](base/kustomization.yaml) - ( [primary](../components/primary-udn), [secondary](../components/primary-secondary), [tertiary](../components/primary-tertiary), [quaternary](../components/primary-quaternary) )
+* [networks](base/kustomization.yaml) - ( [primary](../components/primary-udn/userdefinednetwork.yaml), [secondary](../components/secondary-udn/userdefinednetwork.yaml), [tertiary](../components/tertiary-udn/userdefinednetwork.yaml), [quaternary](../components/quaternary-udn/userdefinednetwork.yaml) )
 * [firewall](vm-firewall/base/kustomization.yaml)
 * [server-1](server-1/base/kustomization.yaml)
 * [server-2](server-2/base/kustomization.yaml)
