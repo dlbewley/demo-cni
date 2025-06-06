@@ -1,3 +1,12 @@
+# WIP
+
+* [networks](base/kustomization.yaml) - ( [primary](../components/primary-udn), [secondary](../components/primary-secondary), [tertiary](../components/primary-tertiary), [quaternary](../components/primary-quaternary) )
+* [firewall](vm-firewall/base/kustomization.yaml)
+* [server-1](server-1/base/kustomization.yaml)
+* [server-2](server-2/base/kustomization.yaml)
+* [server-3](server-3/base/kustomization.yaml)
+
+
 ```mermaid
 graph TD;
     classDef interface fill:#ffcc00,stroke:#333,stroke-width:2px;
