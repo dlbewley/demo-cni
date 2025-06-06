@@ -2,6 +2,8 @@
 apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
 
+namespace: demo-sandbox
+
 resources:
   - ../../base
 
@@ -40,23 +42,6 @@ patches:
           "macAddress": "02:00:0a:02:12:04",
           "model": "virtio"
         }
-      - op: add
-        path: /spec/template/spec/domain/devices/interfaces/-
-        value: {
-          "name": "tertiary-udn",
-          "bridge": {},
-          "macAddress": "02:00:0a:02:12:05",
-          "model": "virtio"
-        }
-      - op: add
-        path: /spec/template/spec/domain/devices/interfaces/-
-        value: {
-          "name": "quaternary-udn",
-          "bridge": {},
-          "macAddress": "02:00:0a:02:12:06",
-          "model": "virtio"
-        }
-
 
       # add secondary networks
       - op: add
@@ -64,16 +49,4 @@ patches:
         value: {
           "name": "secondary-udn",
           "multus": { "networkName": "secondary-udn" }
-        }
-      - op: add
-        path: /spec/template/spec/networks/-
-        value: {
-          "name": "tertiary-udn",
-          "multus": { "networkName": "tertiary-udn" }
-        }
-      - op: add
-        path: /spec/template/spec/networks/-
-        value: {
-          "name": "quaternary-udn",
-          "multus": { "networkName": "quaternary-udn" }
         }
