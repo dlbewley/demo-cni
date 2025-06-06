@@ -44,3 +44,11 @@ patches:
           "name": "secondary-udn",
           "multus": { "networkName": "secondary-udn" }
         }
+
+      - op: replace
+        path: /spec/dataVolumeTemplates/0/metadata/name
+        value: "server-2"
+
+      - op: replace
+        path: /spec/template/spec/volumes/0/dataVolume/name
+        value: "server-2"

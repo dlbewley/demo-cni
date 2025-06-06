@@ -20,6 +20,15 @@ patches:
       - op: replace
         path: /metadata/name
         value: server-1
+
+      - op: replace
+        path: /spec/dataVolumeTemplates/0/metadata/name
+        value: "server-1"
+
+      - op: replace
+        path: /spec/template/spec/volumes/0/dataVolume/name
+        value: "server-1"
+
       - op: replace
         path: /spec/RunStrategy
         value: RerunOnFailure
