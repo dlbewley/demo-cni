@@ -38,51 +38,32 @@ patches:
       - op: replace
         path: /spec/template/spec/domain/devices/interfaces/0
         value: {
-          "name": "default",
-          "binding": {"name": "l2bridge"},
+          "name": "tertiary-udn",
+          "bridge": {},
+          "macAddress": "02:00:0a:02:33:04",
           "model": "virtio"
         }
 
-      # add secondary interface
-      - op: add
-        path: /spec/template/spec/domain/devices/interfaces/-
-        value: {
-          "name": "secondary-udn",
-          "bridge": {},
-          "macAddress": "02:00:0a:02:22:04",
-          "model": "virtio"
-        }
-      - op: add
-        path: /spec/template/spec/domain/devices/interfaces/-
-        value: {
-          "name": "tertiary-udn",
-          "bridge": {},
-          "macAddress": "02:00:0a:02:22:05",
-          "model": "virtio"
-        }
       - op: add
         path: /spec/template/spec/domain/devices/interfaces/-
         value: {
           "name": "quaternary-udn",
           "bridge": {},
-          "macAddress": "02:00:0a:02:22:06",
+          "macAddress": "02:00:0a:02:33:05",
           "model": "virtio"
         }
 
-
       # add secondary networks
-      - op: add
-        path: /spec/template/spec/networks/-
-        value: {
-          "name": "secondary-udn",
-          "multus": { "networkName": "secondary-udn" }
-        }
+      - op: remove
+        path: /spec/template/spec/networks/0
+
       - op: add
         path: /spec/template/spec/networks/-
         value: {
           "name": "tertiary-udn",
           "multus": { "networkName": "tertiary-udn" }
         }
+
       - op: add
         path: /spec/template/spec/networks/-
         value: {
