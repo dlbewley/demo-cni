@@ -1,0 +1,61 @@
+---
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+namespace: demo-sandbox
+
+resources:
+  - ../../base
+
+components:
+  - ../../../components/vm
+
+patches:
+  - target:
+      group: kubevirt.io
+      kind: VirtualMachine
+      name: .*
+      version: v1
+    patch: |-
+      - op: replace
+        path: /metadata/name
+        value: server-1
+
+      - op: replace
+        path: /spec/dataVolumeTemplates/0/metadata/name
+        value: "server-1"
+
+      - op: replace
+        path: /spec/template/spec/volumes/0/dataVolume/name
+        value: "server-1"
+
+      - op: replace
+        path: /spec/RunStrategy
+        value: RerunOnFailure
+
+      # convert default interface from masquerade to bridge 
+      - op: replace
+        path: /spec/template/spec/domain/devices/interfaces/0
+        value: {
+          "name": "default",
+          "binding": {"name": "l2bridge"},
+          "model": "virtio"
+        }
+
+      # add secondary interface
+      - op: add
+        path: /spec/template/spec/domain/devices/interfaces/-
+        value: {
+          "name": "secondary-udn",
+          "bridge": {},
+          "macAddress": "02:00:0a:02:12:04",
+          "model": "virtio"
+        }
+
+      # add secondary networks
+      - op: add
+        path: /spec/template/spec/networks/-
+        value: {
+          "name": "secondary-udn",
+          "multus": { "networkName": "secondary-udn" }
+        }
