@@ -1,0 +1,120 @@
+name: Generate PDFs with Configuration
+
+on:
+  push:
+    branches: [ main, master ]
+    paths:
+      - '**/*.md'
+      - 'css/**'
+      - 'img/**'
+      - '.github/workflows/generate-pdf-advanced.yml'
+  pull_request:
+    branches: [ main, master ]
+    paths:
+      - '**/*.md'
+      - 'css/**'
+      - 'img/**'
+  workflow_dispatch:
+    inputs:
+      config_file:
+        description: 'Path to configuration file (optional)'
+        required: false
+        default: 'marp-config.json'
+
+permissions:
+  contents: write
+  actions: read
+
+jobs:
+  load-config:
+    runs-on: ubuntu-latest
+    outputs:
+      matrix: ${{ steps.parse-config.outputs.matrix }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        
+      - name: Parse configuration
+        id: parse-config
+        run: |
+          CONFIG_FILE="${{ github.event.inputs.config_file || 'marp-config.json' }}"
+          if [ -f "$CONFIG_FILE" ]; then
+            echo "Using configuration from $CONFIG_FILE"
+            # Use jq to parse the JSON and extract presentations array
+            MATRIX=$(jq -r '.presentations | map({file: .file, theme: .theme, output: .output, allow_local_files: (.allow_local_files // true)}) | @json' "$CONFIG_FILE")
+            echo "matrix=$MATRIX" >> $GITHUB_OUTPUT
+          else
+            echo "No configuration file found, using defaults"
+            # Default matrix with single presentation
+            MATRIX='[{"file":"presentation.md","theme":"./css/mylogo.css","output":"presentation.pdf","allow_local_files":true}]'
+            echo "matrix=$MATRIX" >> $GITHUB_OUTPUT
+          fi
+
+  generate-pdfs:
+    needs: load-config
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        config: ${{ fromJson(needs.load-config.outputs.matrix) }}
+    
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+      
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '18'
+        
+    - name: Install Marp CLI
+      run: npm install -g @marp-team/marp-cli
+      
+    - name: Generate PDF
+      run: |
+        # Build marp command with configuration from matrix
+        MARP_CMD="marp"
+        
+        if [ "${{ matrix.config.theme }}" != "" ]; then
+          MARP_CMD="$MARP_CMD --theme=${{ matrix.config.theme }}"
+        fi
+        
+        if [ "${{ matrix.config.allow_local_files }}" = "true" ]; then
+          MARP_CMD="$MARP_CMD --allow-local-files"
+        fi
+        
+        MARP_CMD="$MARP_CMD --pdf ${{ matrix.config.file }}"
+        
+        echo "Running: $MARP_CMD"
+        $MARP_CMD
+        
+    - name: Upload PDF artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: pdf-${{ matrix.config.file }}
+        path: ${{ matrix.config.output }}
+        retention-days: 30
+        
+    - name: Commit PDF to repository
+      run: |
+        git config --local user.email "action@github.com"
+        git config --local user.name "GitHub Action"
+        git add "${{ matrix.config.output }}"
+        git diff --quiet && git diff --staged --quiet || git commit -m "Auto-generate PDF from ${{ matrix.config.file }} [skip ci]"
+        git push
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        
+    - name: Create Release (on push to main/master)
+      if: github.event_name == 'push' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master')
+      uses: softprops/action-gh-release@v1
+      with:
+        files: ${{ matrix.config.output }}
+        tag_name: pdf-${{ matrix.config.file }}-v${{ github.run_number }}
+        name: PDF Release - ${{ matrix.config.file }}
+        body: |
+          Auto-generated PDF from ${{ matrix.config.file }}
+          
+          Generated on: ${{ github.event.head_commit.timestamp }}
+          Commit: ${{ github.sha }}
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} 

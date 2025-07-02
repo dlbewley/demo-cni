@@ -1,0 +1,30 @@
+{
+  "global_settings": {
+    "default_theme": "./css/mylogo.css",
+    "allow_local_files": true,
+    "output_format": "pdf"
+  },
+  "presentations": [
+    {
+      "file": "presentation.md",
+      "theme": "./css/mylogo.css",
+      "output": "presentation-advanced.pdf",
+      "allow_local_files": true,
+      "description": "Main presentation with custom logo theme"
+    },
+    {
+      "file": "presentation.md",
+      "theme": "default",
+      "output": "presentation-advanced-default.pdf",
+      "allow_local_files": true,
+      "description": "Main presentation with default theme"
+    },
+    {
+      "file": "presentation.md",
+      "theme": "default",
+      "output": "presentation-advanced-noebeam.pdf",
+      "allow_local_files": true,
+      "description": "Main presentation with neobeam theme"
+    }
+  ]
+} 
