@@ -7,7 +7,7 @@ theme: mylogo
 paginate: true
 html: true
 build-multiplier: 1 # this fixes PDF gen with neobeam theme
-size: 4k
+size: hd
 ---
 <!-- _paginate: skip -->
 <!-- _ffffooter: _[Dale Bewley](www.linkedin.com/in/dalebewley) - <https://github.com/dlbewley/demo-cni/>_ -->
@@ -45,7 +45,7 @@ size: 4k
 
 Creates the interfaces in the pod used by the VM
 
-![logo Kubevirt](img/multus.png)
+![logo Multus](img/multus.png)
 
 ---
 <!-- class: icon -->
@@ -73,7 +73,7 @@ CNI Plugins enable pod network configuration
 ### 🔌 SR-IoV
 ### 🔌 ...
 
-![logo Kubevirt](img/cni.png)
+![logo CNI](img/cni.png)
 
 ---
 <style scoped>
@@ -88,8 +88,7 @@ There are many plugins and they may be chained by Multus
 
 ```bash
 $ oc rsh -n openshift-multus \
-  multus-2tt2c \
-  ls -1 /var/lib/cni/bin
+  multus-2tt2c ls -1 /var/lib/cni/bin
 bandwidth
 bond
 bridge
@@ -119,11 +118,12 @@ ovn-k8s-cni-overlay
 ...
 ```
 
+<span class="logo-emoji">🔌</span>
+
 ---
 
 ### 🔌 [bridge](https://www.cni.dev/plugins/current/main/bridge/) Plugin
 
-> Don't use cnv-bridge, use bridge. They are identical.
 
 Bridge can be used to attach to a Linux Bridge which may enable VLAN access or [VGT](https://guifreelife.com/blog/2025/01/02/OpenShift-Virtualization-VLAN-Guest-Tagging/)
 
@@ -135,6 +135,10 @@ Bridge can be used to attach to a Linux Bridge which may enable VLAN access or [
     ...
 }
 ```
+
+> 💡 Don't use cnv-bridge, use bridge. They are identical.
+
+![logo Linux-Bridge](img/bridge.jpg)
 
 ---
 <!-- class: icon -->
@@ -151,8 +155,7 @@ Bridge can be used to attach to a Linux Bridge which may enable VLAN access or [
 }
 ```
 
-![logo Kubevirt](img/ovn-kubernetes.png)
-
+![logo OVN-Kubernetes](img/ovn-kubernetes.png)
 
 ---
 <!-- class: icon -->
@@ -162,7 +165,34 @@ Bridge can be used to attach to a Linux Bridge which may enable VLAN access or [
   column-rule: 1px solid #ccc; }
   p, h1, h2 { column-span: all; }
 </style>
-> Discussion of network attachments available for Virtual Machines on OpenShift with example implementations
+
+# Primary Versus Secondary Networks
+
+### 🛜 Pod Primary Network Interface
+* Default route
+* CNI cluster default
+* IPAM:
+  * "infrastructure locked" Cluster Network (10.128.0.0/14)
+  * Or a Primary User Defined Network for the NS
+* Traffic filtering: `NetworkPolicy`
+
+### 🛜 Pod Secondary Network Interface
+* Types: 
+* IPAM: (depends)
+  * "infrastructure locked" Cluster Network (10.128.0.0/14)
+  * Or a Primary User Defined Network for the NS
+* Traffic filtering: `MultiNetworkPolicy`
+
+<span class="logo-emoji">🛜</span>
+
+---
+<!-- class: icon -->
+<!-- header: Agenda -->
+<style scoped>
+  section {columns: 2; 
+  column-rule: 1px solid #ccc; }
+  p, h1, h2 { column-span: all; }
+</style>
 
 # KubeVirt Interfaces and Networks
 ### 🛜 Primary Cluster Network
@@ -170,9 +200,16 @@ Bridge can be used to attach to a Linux Bridge which may enable VLAN access or [
 ### 🛜 Secondary Localnet (VLANs)
 ### 🛜 Secondary User Defined Networks  
 
+<span class="logo-emoji">🛜</span>
+
+---
+
+> Network attachments available for Virtual Machines on OpenShift with example implementations
+
 ![logo Kubevirt](img/kubevirt.png)
 
 ---
+
 <!-- class: invert icon -->
 <!-- header: Cluster Network -->
 <style scoped> section { columns: 2; } </style>
@@ -273,13 +310,13 @@ default via 10.0.2.1 dev eth0 proto dhcp src 10.0.2.2 metric 100
 <!-- header: Primary User Defined Network -->
 <style scoped>
 section { columns: 2; }
- h1 { column-span: all; }
+ h1 h2 { column-span: all; }
 </style>
 # VM Examples - Primary UDN
 
 ## VMs have unique IPs from UDN subnet
 
-Only Layer2 topology is supported (`localnet` soon)
+Only Layer2 topology is supported (_`localnet` in 4.19_)
 
 ```yaml
 apiVersion: k8s.ovn.org/v1
@@ -294,15 +331,7 @@ spec:
     subnets:
       - 10.1.1.0/24
 ```
----
-<!-- _class: invert icon -->
-<!-- header: Primary User Defined Network -->
-<style scoped>
-  section {columns: 2; 
-  column-rule: 1px solid #ccc; }
- h1 { column-span: all; }
-</style>
-...continued
+
 ```yaml
 # VM attached to primary UDN
 apiVersion: kubevirt.io/v1
