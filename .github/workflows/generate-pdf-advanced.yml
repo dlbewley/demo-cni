@@ -70,6 +70,7 @@ jobs:
       run: npm install -g @marp-team/marp-cli
       
     - name: Generate PDF
+      id: generate
       run: |
         # Build marp command with configuration from matrix
         MARP_CMD="marp"
@@ -82,23 +83,33 @@ jobs:
           MARP_CMD="$MARP_CMD --allow-local-files"
         fi
         
-        MARP_CMD="$MARP_CMD --pdf ${{ matrix.config.file }}"
+        # Use the output filename from config, or default to same basename as input
+        OUTPUT_FILE="${{ matrix.config.output }}"
+        if [ -z "$OUTPUT_FILE" ]; then
+          # Default to same basename as input file with .pdf extension
+          OUTPUT_FILE=$(basename "${{ matrix.config.file }}" .md).pdf
+        fi
+        
+        MARP_CMD="$MARP_CMD --pdf -o $OUTPUT_FILE ${{ matrix.config.file }}"
         
         echo "Running: $MARP_CMD"
         $MARP_CMD
+        
+        # Store the output filename for other steps
+        echo "output_file=$OUTPUT_FILE" >> $GITHUB_OUTPUT
         
     - name: Upload PDF artifact
       uses: actions/upload-artifact@v4
       with:
         name: pdf-${{ matrix.config.file }}
-        path: ${{ matrix.config.output }}
+        path: ${{ steps.generate.outputs.output_file }}
         retention-days: 30
         
     - name: Commit PDF to repository
       run: |
         git config --local user.email "action@github.com"
         git config --local user.name "GitHub Action"
-        git add "${{ matrix.config.output }}"
+        git add "${{ steps.generate.outputs.output_file }}"
         git diff --quiet && git diff --staged --quiet || git commit -m "Auto-generate PDF from ${{ matrix.config.file }} [skip ci]"
         git push
       env:
@@ -108,11 +119,11 @@ jobs:
       if: github.event_name == 'push' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master')
       uses: softprops/action-gh-release@v1
       with:
-        files: ${{ matrix.config.output }}
+        files: ${{ steps.generate.outputs.output_file }}
         tag_name: pdf-${{ matrix.config.file }}-v${{ github.run_number }}
         name: PDF Release - ${{ matrix.config.file }}
         body: |
-          Auto-generated PDF from ${{ matrix.config.file }}
+          Auto-generate PDF from ${{ matrix.config.file }}
           
           Generated on: ${{ github.event.head_commit.timestamp }}
           Commit: ${{ github.sha }}

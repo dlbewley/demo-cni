@@ -8,7 +8,7 @@
     {
       "file": "presentation.md",
       "theme": "./css/mylogo.css",
-      "output": "presentation-advanced.pdf",
+      "output": "presentation.pdf",
       "allow_local_files": true,
       "description": "Main presentation with custom logo theme"
     },
