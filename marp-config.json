@@ -11,20 +11,6 @@
       "output": "presentation.pdf",
       "allow_local_files": true,
       "description": "Main presentation with custom logo theme"
-    },
-    {
-      "file": "presentation.md",
-      "theme": "default",
-      "output": "presentation-advanced-default.pdf",
-      "allow_local_files": true,
-      "description": "Main presentation with default theme"
-    },
-    {
-      "file": "presentation.md",
-      "theme": "default",
-      "output": "presentation-advanced-noebeam.pdf",
-      "allow_local_files": true,
-      "description": "Main presentation with neobeam theme"
     }
   ]
 } 

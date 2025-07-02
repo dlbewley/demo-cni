@@ -4,7 +4,10 @@
 
 	// List of extensions which should be recommended for users of this workspace.
 	"recommendations": [
-		
+		"marp-team.marp-vscode",
+		"shd101wyy.markdown-preview-enhanced",
+		"bierner.markdown-mermaid",
+		"yzhang.markdown-all-in-one"
 	],
 	// List of extensions recommended by VS Code that should not be recommended for users of this workspace.
 	"unwantedRecommendations": [
