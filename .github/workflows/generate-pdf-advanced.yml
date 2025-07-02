@@ -98,10 +98,15 @@ jobs:
         # Store the output filename for other steps
         echo "output_file=$OUTPUT_FILE" >> $GITHUB_OUTPUT
         
+        # Create a unique identifier for this job
+        THEME_NAME=$(basename "${{ matrix.config.theme }}" .css 2>/dev/null || echo "${{ matrix.config.theme }}")
+        UNIQUE_ID="${THEME_NAME}-${OUTPUT_FILE}"
+        echo "unique_id=$UNIQUE_ID" >> $GITHUB_OUTPUT
+        
     - name: Upload PDF artifact
       uses: actions/upload-artifact@v4
       with:
-        name: pdf-${{ matrix.config.file }}
+        name: pdf-${{ steps.generate.outputs.unique_id }}
         path: ${{ steps.generate.outputs.output_file }}
         retention-days: 30
         
