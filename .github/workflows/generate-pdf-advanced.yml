@@ -118,12 +118,22 @@ jobs:
         git config --local user.email "action@github.com"
         git config --local user.name "GitHub Action"
         
-        # Pull latest changes to avoid conflicts
+        # Check if we have changes to commit
+        if git diff --quiet && git diff --staged --quiet; then
+          echo "No changes to commit"
+          exit 0
+        fi
+        
+        # Add the generated PDF
+        git add "${{ steps.generate.outputs.output_file }}"
+        
+        # Commit the changes
+        git commit -m "Auto-generate PDF from ${{ matrix.config.file }} [skip ci]"
+        
+        # Pull latest changes and rebase our commit on top
         git pull --rebase origin main
         
-        # Add and commit the PDF
-        git add "${{ steps.generate.outputs.output_file }}"
-        git diff --quiet && git diff --staged --quiet || git commit -m "Auto-generate PDF from ${{ matrix.config.file }} [skip ci]"
+        # Push the changes
         git push
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
