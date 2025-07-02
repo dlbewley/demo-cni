@@ -56,6 +56,9 @@ jobs:
     strategy:
       matrix:
         config: ${{ fromJson(needs.load-config.outputs.matrix) }}
+      # Run jobs sequentially to avoid Git conflicts
+      fail-fast: false
+      max-parallel: 1
     
     steps:
     - name: Checkout repository
@@ -114,6 +117,11 @@ jobs:
       run: |
         git config --local user.email "action@github.com"
         git config --local user.name "GitHub Action"
+        
+        # Pull latest changes to avoid conflicts
+        git pull --rebase origin main
+        
+        # Add and commit the PDF
         git add "${{ steps.generate.outputs.output_file }}"
         git diff --quiet && git diff --staged --quiet || git commit -m "Auto-generate PDF from ${{ matrix.config.file }} [skip ci]"
         git push
