@@ -5,14 +5,16 @@
  * @author dlbewley
  *
  * @auto-scaling true
- * @size 16:9 1920px 1090px
+ * @size hd 1920px 1090px
  * @size 4:3 960px 720px
+ * @size 4k 3840px 2160px
  */
 /* mylogo.css */
 @import "default";
 
-/* Logo */
-section.title img[alt*="logo"] {
+/* Logo - Images and Text */
+section.title img[alt*="logo"],
+section.title .logo-emoji {
   --offset: -5%;
   --rotate: 0deg;
 
@@ -22,20 +24,25 @@ section.title img[alt*="logo"] {
   right:  var(--offset);
   bottom: 0;
 
+  /* For images */
   width: 350px;
   object-fit: contain;
+
+  /* For text emojis */
+  font-size: 200px;
+  line-height: 1;
 
   /* Rotate it slightly */
   transform: rotate(var(--rotate));
   opacity: 0.5;
-
 }
 section {
   column-gap: 2em;
   column-rule: 1px solid #ccc;
 }
 
-section.icon img[alt*="logo"] {
+section.icon img[alt*="logo"],
+section.icon .logo-emoji {
   --offset: -5%;
   --rotate: -45deg;
 
@@ -45,11 +52,15 @@ section.icon img[alt*="logo"] {
   right:  var(--offset);
   bottom: 0;
 
+  /* For images */
   width: 350px;
   object-fit: contain;
+
+  /* For text emojis */
+  font-size: 200px;
+  line-height: 1;
 
   /* Rotate it slightly */
   transform: rotate(var(--rotate));
   opacity: 0.5;
-
 }
