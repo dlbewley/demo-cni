@@ -8,9 +8,10 @@ paginate: true
 html: true
 build-multiplier: 1 # this fixes PDF gen with neobeam theme
 size: hd
+
 ---
 <!-- _paginate: skip -->
-<!-- _ffffooter: _[Dale Bewley](www.linkedin.com/in/dalebewley) - <https://github.com/dlbewley/demo-cni/>_ -->
+<!-- _ffffooter: _[Dale Bewley](https://www.linkedin.com/in/dalebewley) - <https://github.com/dlbewley/demo-cni/>_ -->
 <!-- _class: title invert -->
 <!-- _footer: '[github.com/dlbewley/demo-cni](https://github.com/dlbewley/demo-cni/)' -->
 ![bg grayscale opacity:20%](img/openshift.png)
@@ -25,39 +26,25 @@ size: hd
 
 ![logo Logo](img/logo.png)
 ---
-<!-- footer: '**[Dale Bewley](www.linkedin.com/in/dalebewley)**
+<!-- footer: '**[Dale Bewley](https://www.linkedin.com/in/dalebewley)**
          **|**
          **[github.com/dlbewley/demo-cni](https://github.com/dlbewley/demo-cni/)**' -->
 
 ---
-<!-- paginate: true -->
 <!-- class: icon -->
-<!-- header: CNI -->
-<style scoped>
-  section {columns: 2; 
-  column-rule: 1px solid #ccc; }
-  p, h1, h2 { column-span: all; }
-</style>
-
-# Multus Meta CNI Plugin
-> The CNI used by OpenShift
-> Is a meta-plugin which executes other plugins
-
-Creates the interfaces in the pod used by the VM
-
-![logo Multus](img/multus.png)
+<span class="logo-emoji">🗒</span><!-- notepad -->
 
 ---
 <!-- class: icon -->
 <style scoped>
-  section {columns: 2; 
+  section {columns: 2;
   column-rule: 1px solid #ccc; }
   p, h1, h2 { column-span: all; }
 </style>
 
 # Container Network Interface
 
-CNI Plugins enable pod network configuration 
+CNI Plugins enable pod network configuration
 
 ```json
 {
@@ -75,14 +62,40 @@ CNI Plugins enable pod network configuration
 
 ![logo CNI](img/cni.png)
 
+<!--
+ speaker notes
+ foo bar
+ baz
+-->
+
 ---
+<!-- paginate: true -->
+<!-- class: icon -->
+<!-- header: CNI -->
 <style scoped>
-  section { columns: 2; 
+  section {columns: 2;
   column-rule: 1px solid #ccc; }
   p, h1, h2 { column-span: all; }
 </style>
 
-## 🔌 CNI Plugins
+# 🔌 Multus "Meta" CNI Plugin
+
+- The CNI used by OpenShift
+- Creates the interfaces in the pod used by the VM
+- Is a meta-plugin which executes other plugins
+
+## Plugin Chaining
+
+![logo Multus](img/multus.png)
+
+---
+<style scoped>
+  section { columns: 2;
+  column-rule: 1px solid #ccc; }
+  p, h1, h2 { column-span: all; }
+</style>
+
+# 🔌 CNI Plugins
 
 There are many plugins and they may be chained by Multus
 
@@ -121,8 +134,9 @@ ovn-k8s-cni-overlay
 <span class="logo-emoji">🔌</span>
 
 ---
+<!-- header: Plugins -->
 
-### 🔌 [bridge](https://www.cni.dev/plugins/current/main/bridge/) Plugin
+# 🔌 [bridge](https://www.cni.dev/plugins/current/main/bridge/) Plugin
 
 
 Bridge can be used to attach to a Linux Bridge which may enable VLAN access or [VGT](https://guifreelife.com/blog/2025/01/02/OpenShift-Virtualization-VLAN-Guest-Tagging/)
@@ -136,14 +150,13 @@ Bridge can be used to attach to a Linux Bridge which may enable VLAN access or [
 }
 ```
 
-> 💡 Don't use cnv-bridge, use bridge. They are identical.
-
+> * 💡 Don't use cnv-bridge, use bridge. They are identical.
+<!-- <span class="logo-emoji">🌉</span> -->
 ![logo Linux-Bridge](img/bridge.jpg)
 
 ---
-<!-- class: icon -->
 
-### 🔌 ovn-k8s-cni-overlay Plugin
+# 🔌 ovn-k8s-cni-overlay Plugin
 
 ```json
 {
@@ -158,10 +171,9 @@ Bridge can be used to attach to a Linux Bridge which may enable VLAN access or [
 ![logo OVN-Kubernetes](img/ovn-kubernetes.png)
 
 ---
-<!-- class: icon -->
 <!-- header: Agenda -->
 <style scoped>
-  section {columns: 2; 
+  section {columns: 2;
   column-rule: 1px solid #ccc; }
   p, h1, h2 { column-span: all; }
 </style>
@@ -169,36 +181,36 @@ Bridge can be used to attach to a Linux Bridge which may enable VLAN access or [
 # Primary Versus Secondary Networks
 
 ### 🛜 Pod Primary Network Interface
-* Default route
-* CNI cluster default
-* IPAM:
-  * "infrastructure locked" Cluster Network (10.128.0.0/14)
-  * Or a Primary User Defined Network for the NS
-* Traffic filtering: `NetworkPolicy`
+- Default route
+- CNI cluster default
+- IPAM:
+  - "infrastructure locked" Cluster Network (10.128.0.0/14)
+  - Or a Primary User Defined Network for the NS
+- Traffic filtering: `NetworkPolicy`
 
 ### 🛜 Pod Secondary Network Interface
-* Types: 
-* IPAM: (depends)
-  * "infrastructure locked" Cluster Network (10.128.0.0/14)
-  * Or a Primary User Defined Network for the NS
-* Traffic filtering: `MultiNetworkPolicy`
+- Types:
+- IPAM: (depends)
+  - "infrastructure locked" Cluster Network (10.128.0.0/14)
+  - Or a Primary User Defined Network for the NS
+- Traffic filtering: `MultiNetworkPolicy`
+-
 
 <span class="logo-emoji">🛜</span>
 
 ---
-<!-- class: icon -->
 <!-- header: Agenda -->
 <style scoped>
-  section {columns: 2; 
+  section {columns: 2;
   column-rule: 1px solid #ccc; }
   p, h1, h2 { column-span: all; }
 </style>
 
 # KubeVirt Interfaces and Networks
 ### 🛜 Primary Cluster Network
-### 🛜 Primary User Defined Networks  
+### 🛜 Primary User Defined Networks
 ### 🛜 Secondary Localnet (VLANs)
-### 🛜 Secondary User Defined Networks  
+### 🛜 Secondary User Defined Networks
 
 <span class="logo-emoji">🛜</span>
 
@@ -237,16 +249,17 @@ spec:
               name: default
       networks:
         - name: default
-          pod: {}        
+          pod: {}
 ```
 
 ![logo Kubevirt](img/kubevirt.png)
 
 ---
-<!-- class: default -->
-#### Virt-Launcher Pod
-Two ethernet interfaces in the virt launcher pod. 
-* Infrastructure locked `10.128.0.0/14` cluster network 
+<!-- class: icon -->
+
+# Virt-Launcher Pod
+Two ethernet interfaces in the virt launcher pod.
+* Infrastructure locked `10.128.0.0/14` cluster network
 * Always on `10.0.2.1/24`
 * `k6t-eth0` short for `kubevirt-eth0` is a bridge enslaving `tap0`
 * `tap0` is passed to QEMU for `eth0` in the VM
@@ -255,7 +268,7 @@ Two ethernet interfaces in the virt launcher pod.
 sh-5.1$ ip -c link
 1: lo: <LOOPBACK,UP,LOWER_UP> mtu 65536 qdisc noqueue state UNKNOWN mode DEFAULT group default qlen 1000
     link/loopback 00:00:00:00:00:00 brd 00:00:00:00:00:00
-2: eth0@if379: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1400 qdisc noqueue state UP mode DEFAULT group default 
+2: eth0@if379: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1400 qdisc noqueue state UP mode DEFAULT group default
     link/ether 0a:58:0a:83:01:61 brd ff:ff:ff:ff:ff:ff link-netnsid 0
 3: k6t-eth0: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1400 qdisc noqueue state UP mode DEFAULT group default qlen 1000
     link/ether 02:00:00:00:00:00 brd ff:ff:ff:ff:ff:ff
@@ -263,14 +276,17 @@ sh-5.1$ ip -c link
     link/ether be:53:ae:c8:c5:66 brd ff:ff:ff:ff:ff:ff
 
 sh-5.1$ ip -br -c -4 a
-lo               UNKNOWN        127.0.0.1/8 
-eth0@if379       UP             10.131.1.97/23 
-k6t-eth0         UP             10.0.2.1/24  
+lo               UNKNOWN        127.0.0.1/8
+eth0@if379       UP             10.131.1.97/23
+k6t-eth0         UP             10.0.2.1/24
 ```
----
-#### Virtual Machine
 
-* VM _always_ has IP `10.0.2.2/24`. 
+<span class="logo-emoji">🫛</span><!-- pod -->
+
+---
+# Virtual Machine
+
+* VM _always_ has IP `10.0.2.2/24`.
 * Masquerades as pod IP `10.131.1.97/23` above.
 
 ```bash
@@ -282,31 +298,35 @@ k6t-eth0         UP             10.0.2.1/24
     altname enp1s0
 
 [cloud-user@vm-pod ~]$ ip -br -c -4 a
-lo               UNKNOWN        127.0.0.1/8 
-eth0             UP             10.0.2.2/24 
+lo               UNKNOWN        127.0.0.1/8
+eth0             UP             10.0.2.2/24
 
 [cloud-user@vm-pod ~]$ ip -c route
-default via 10.0.2.1 dev eth0 proto dhcp src 10.0.2.2 metric 100 
-10.0.2.0/24 dev eth0 proto kernel scope link src 10.0.2.2 metric 100 
+default via 10.0.2.1 dev eth0 proto dhcp src 10.0.2.2 metric 100
+10.0.2.0/24 dev eth0 proto kernel scope link src 10.0.2.2 metric 100
 ```
 
+<span class="logo-emoji">💻</span><!-- computer -->
+
 ---
-# VM on Default Cluster Network 
+# VM on Default Cluster Network
 
 ## Summary
 
 ### Virt-launcher Pods
-* eth0 on cluster network `10.128.0.0/14`
-* k6t-eth0 always has IP `10.0.2.1/24`
+- eth0 on cluster network `10.128.0.0/14`
+- k6t-eth0 always has IP `10.0.2.1/24`
 
 ### VirtualMachines
-* eth0 is always IP `10.0.2.2/24`
-* Default gateway is always `10.0.2.1` on virt-launcher pod
-* Masquerades at pod edge as IP of the virt-launcher pod
-* Masquerades at node edge as IP of node default interface `br-ex`
+- eth0 is always IP `10.0.2.2/24`
+- Default gateway is always `10.0.2.1` on virt-launcher pod
+- Masquerades at pod edge as IP of the virt-launcher pod
+- Masquerades at node edge as IP of node default interface `br-ex`
+
+<span class="logo-emoji">📚</span><!-- books -->
 
 ---
-<!-- _class: invert -->
+<!-- _class: invert icon -->
 <!-- header: Primary User Defined Network -->
 <style scoped>
 section { columns: 2; }
@@ -347,19 +367,19 @@ spec:
             - binding:
                 name: l2bridge
               model: virtio
-              name: default      
+              name: default
       networks:
         - name: default
-          pod: {}        
+          pod: {}
 ```
 
 ![logo Kubevirt](img/kubevirt.png)
 
 ---
-<!-- class: default -->
-## Virt-Launcher Pod
+<!-- class: icon -->
+# Virt-Launcher Pod
 
-Two ethernet interfaces in the virt launcher pod. 
+Two ethernet interfaces in the virt launcher pod.
 * Infrastructure locked `10.128.0.0/14` cluster network  for kubelet health checks _only_
 * Unique IP on the UDN range `10.1.1.0/24`
 
@@ -367,9 +387,9 @@ Two ethernet interfaces in the virt launcher pod.
 sh-5.1$ ip -c link
 1: lo: <LOOPBACK,UP,LOWER_UP> mtu 65536 qdisc noqueue state UNKNOWN mode DEFAULT group default qlen 1000
     link/loopback 00:00:00:00:00:00 brd 00:00:00:00:00:00
-2: eth0@if356: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1400 qdisc noqueue state UP mode DEFAULT group default 
+2: eth0@if356: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1400 qdisc noqueue state UP mode DEFAULT group default
     link/ether 0a:58:0a:83:01:4b brd ff:ff:ff:ff:ff:ff link-netnsid 0
-3: ovn-udn1-nic@if357: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1400 qdisc noqueue master k6t-ovn-udn1 state UP mode DEFAULT group default 
+3: ovn-udn1-nic@if357: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1400 qdisc noqueue master k6t-ovn-udn1 state UP mode DEFAULT group default
     link/ether 06:1b:c3:df:4d:d3 brd ff:ff:ff:ff:ff:ff link-netnsid 0
 4: k6t-ovn-udn1: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1400 qdisc noqueue state UP mode DEFAULT group default qlen 1000
     link/ether 06:1b:c3:df:4d:d3 brd ff:ff:ff:ff:ff:ff
@@ -379,13 +399,16 @@ sh-5.1$ ip -c link
     link/ether 0a:58:0a:01:01:03 brd ff:ff:ff:ff:ff:ff
 
 sh-5.1$ ip -br -c -4 a
-lo               UNKNOWN        127.0.0.1/8 
-eth0@if356       UP             10.131.1.75/23 
-ovn-udn1         DOWN           10.1.1.3/24 
+lo               UNKNOWN        127.0.0.1/8
+eth0@if356       UP             10.131.1.75/23
+ovn-udn1         DOWN           10.1.1.3/24
 ```
+
+<span class="logo-emoji">🫛</span><!-- pod -->
+
 ---
-## Virtual Machine
-One ethernet interface in the VM with IP from primary UDN
+# Virtual Machine
+* One ethernet interface in the VM with IP from primary UDN
 
 ```bash
 [cloud-user@vm-primary-udn ~]$ ip -c link
@@ -396,16 +419,19 @@ One ethernet interface in the VM with IP from primary UDN
     altname enp1s0
 
 [cloud-user@vm-primary-udn ~]$ ip -br -c -4 a
-lo               UNKNOWN        127.0.0.1/8 
-eth0             UP             10.1.1.3/24 
+lo               UNKNOWN        127.0.0.1/8
+eth0             UP             10.1.1.3/24
 
 [cloud-user@vm-primary-udn ~]$ ip -c route
-default via 10.1.1.1 dev eth0 proto dhcp src 10.1.1.3 metric 100 
-10.1.1.0/24 dev eth0 proto kernel scope link src 10.1.1.3 metric 100 
+default via 10.1.1.1 dev eth0 proto dhcp src 10.1.1.3 metric 100
+10.1.1.0/24 dev eth0 proto kernel scope link src 10.1.1.3 metric 100
 ```
----
-## VM on Primary User Defined Network 
 
+<span class="logo-emoji">💻</span><!-- computer -->
+
+---
+# VM on Primary User Defined Network
+## Summary
 ### Virt-Launcher Pod
 * Two ethernet interfaces
 * eth0@if356 is on infrastructure locked cluster network `10.128.0.0/14`
@@ -416,6 +442,9 @@ default via 10.1.1.1 dev eth0 proto dhcp src 10.1.1.3 metric 100
 * Default gateway is `10.1.1.1`
 * Masquerades at UDN gateway rotuer as the IP from `169.254.0.0/17` associated with the UDN
 * Masquerades at node edge as IP of node default interface `br-ex`
+
+<span class="logo-emoji">📚</span><!-- books -->
+
 ---
 <style scoped>section {columns: 2;}</style>
 ## Masquerade Subnet
@@ -438,6 +467,8 @@ spec:
         ipv6: {} # <-- default: fd69::/112
         routingViaHost: false
 ```
+
+<span class="logo-emoji">🛜</span>
 
 ---
 <!-- _class: invert -->
@@ -475,11 +506,13 @@ spec:
     subnets:
       - 10.2.2.0/24
 ```
+
+
 ---
 <!-- _class: invert icon -->
 <!-- header: Primary & Secondary User Defined Networks -->
-<style scoped>  { columns: 2; } </style>
-...continued
+
+
 
 ```yaml
 # VM attached to primary UDN and secondary UDN
@@ -503,27 +536,29 @@ spec:
               name: secondary-udn
       networks:
         - name: default
-          pod: {}        
+          pod: {}
         - multus:
             networkName: secondary-udn
           name: secondary-udn
 ```
 
+
+
 ![logo Kubevirt](img/kubevirt.png)
 
 ---
-<!-- class: default -->
+<!-- class: icon -->
 ## Virt-Launcher Pod
 
 ```bash
 sh-5.1$ ip -c link
 1: lo: <LOOPBACK,UP,LOWER_UP> mtu 65536 qdisc noqueue state UNKNOWN mode DEFAULT group default qlen 1000
     link/loopback 00:00:00:00:00:00 brd 00:00:00:00:00:00
-2: eth0@if412: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1400 qdisc noqueue state UP mode DEFAULT group default 
+2: eth0@if412: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1400 qdisc noqueue state UP mode DEFAULT group default
     link/ether 0a:58:0a:83:01:80 brd ff:ff:ff:ff:ff:ff link-netnsid 0
-3: ovn-udn1-nic@if413: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1400 qdisc noqueue master k6t-ovn-udn1 state UP mode DEFAULT group default 
+3: ovn-udn1-nic@if413: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1400 qdisc noqueue master k6t-ovn-udn1 state UP mode DEFAULT group default
     link/ether 92:16:66:87:e3:d3 brd ff:ff:ff:ff:ff:ff link-netnsid 0
-4: 2eae7330186-nic@if414: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1400 qdisc noqueue master k6t-2eae7330186 state UP mode DEFAULT group default 
+4: 2eae7330186-nic@if414: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1400 qdisc noqueue master k6t-2eae7330186 state UP mode DEFAULT group default
     link/ether 26:fc:0d:92:fe:71 brd ff:ff:ff:ff:ff:ff link-netnsid 0
 5: k6t-ovn-udn1: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1400 qdisc noqueue state UP mode DEFAULT group default qlen 1000
     link/ether 92:16:66:87:e3:d3 brd ff:ff:ff:ff:ff:ff
@@ -539,12 +574,15 @@ sh-5.1$ ip -c link
     link/ether 02:00:0a:02:02:03 brd ff:ff:ff:ff:ff:ff
 
 sh-5.1$ ip -br -c -4 a
-lo               UNKNOWN        127.0.0.1/8 
-eth0@if412       UP             10.131.1.128/23 
-ovn-udn1         DOWN           10.1.1.3/24 
-k6t-2eae7330186  UP             169.254.75.11/32 
-pod2eae7330186   DOWN           10.2.2.1/24 
+lo               UNKNOWN        127.0.0.1/8
+eth0@if412       UP             10.131.1.128/23
+ovn-udn1         DOWN           10.1.1.3/24
+k6t-2eae7330186  UP             169.254.75.11/32
+pod2eae7330186   DOWN           10.2.2.1/24
 ```
+
+<span class="logo-emoji">🫛</span><!-- pod -->
+
 ---
 ## Virtual Machine
 
@@ -560,32 +598,37 @@ pod2eae7330186   DOWN           10.2.2.1/24
     altname enp2s0
 
 [cloud-user@vm-secondary-udn ~]$ ip -br -c -4 a
-lo               UNKNOWN        127.0.0.1/8 
-eth0             UP             10.1.1.3/24 
-eth1             UP             10.2.2.1/24 
+lo               UNKNOWN        127.0.0.1/8
+eth0             UP             10.1.1.3/24
+eth1             UP             10.2.2.1/24
 
 [cloud-user@vm-secondary-udn ~]$ ip -c route
-default via 10.1.1.1 dev eth0 proto dhcp src 10.1.1.3 metric 100 
-10.1.1.0/24 dev eth0 proto kernel scope link src 10.1.1.3 metric 100 
+default via 10.1.1.1 dev eth0 proto dhcp src 10.1.1.3 metric 100
+10.1.1.0/24 dev eth0 proto kernel scope link src 10.1.1.3 metric 100
 10.2.2.0/24 dev eth1 proto kernel scope link src 10.2.2.1 metric 101
 ```
+
+<span class="logo-emoji">💻</span><!-- computer -->
+
 ---
-<style scoped> section {  font-size: 150%; /* or smaller */ } </style>
-## Summary VM on Primary & Secondary User Defined Network 
+# VM on Primary & Secondary User Defined Network
+
+## Summary
 
 ### Virt-Launcher Pod
-* Three ethernet interfaces
-* eth0@if412 is on infrastructure locked cluster network `10.128.0.0/14`
-* ovn-udn1 is on primary UDN `10.1.1.3/24`
-* pod2eae7330186 is on secondary UDN `10.2.2.1/24`
+- Three ethernet interfaces
+- eth0@if412 is on infrastructure locked cluster network `10.128.0.0/14`
+- ovn-udn1 is on primary UDN `10.1.1.3/24`
+- pod2eae7330186 is on secondary UDN `10.2.2.1/24`
 
 ### Virtual Machine
-* eth0 has unique IP `10.1.1.3/24` from primary UDN of this Namespace
-* eth1 has unique IP `10.2.2.1/24` from secondary UDN of this Namespace
-* Default gateway is `10.1.1.1`
-* Masquerades at UDN gateway router as the IP from `169.254.0.0/17` for the UDN
-* Masquerades at node edge as IP of node default interface `br-ex`
+- eth0 has unique IP `10.1.1.3/24` from primary UDN of this Namespace
+- eth1 has unique IP `10.2.2.1/24` from secondary UDN of this Namespace
+- Default gateway is `10.1.1.1`
+- Masquerades at UDN gateway router as the IP from `169.254.0.0/17` for the UDN
+- Masquerades at node edge as IP of node default interface `br-ex`
 
+<span class="logo-emoji">📚</span><!-- books -->
 
 ---
 <!-- _class: invert icon -->
@@ -598,7 +641,7 @@ default via 10.1.1.1 dev eth0 proto dhcp src 10.1.1.3 metric 100
   h1 { column-span: all; }
 </style>
 
-# VM Examples - Localnet Secondary 
+# VM Examples - Localnet Secondary
 
 ## VMs directly attached to VLAN
 
@@ -613,10 +656,10 @@ metadata:
 spec:
   config: |-
     {
-    "cniVersion": "0.4.0", 
+    "cniVersion": "0.4.0",
     "name": "demo-vlan-1924",
-    "type": "ovn-k8s-cni-overlay", 
-    "topology": "localnet", 
+    "type": "ovn-k8s-cni-overlay",
+    "topology": "localnet",
     "netAttachDefName": "demo-vm-localnet/demo-vlan-1924",
     "vlanID": 1924,
     "ipam": {}
@@ -654,7 +697,7 @@ spec:
 ![logo Kubevirt](img/kubevirt.png)
 
 ---
-<!-- class: default -->
+<!-- class: icon -->
 ### Virt-Launcher Pod
 
 ```bash
@@ -681,6 +724,9 @@ lo               UNKNOWN        127.0.0.1/8
 eth0@if607       UP             10.131.0.84/23
 k6t-eth0         UP             10.0.2.1/24
 ```
+
+<span class="logo-emoji">🫛</span><!-- pod -->
+
 ---
 ### Virtual Machine
 
@@ -706,18 +752,26 @@ default via 192.168.4.1 dev eth1 proto dhcp src 192.168.4.71 metric 101
 10.0.2.0/24 dev eth0 proto kernel scope link src 10.0.2.2 metric 100
 192.168.4.0/24 dev eth1 proto kernel scope link src 192.168.4.71 metric 101
 ```
+
+<span class="logo-emoji">💻</span><!-- computer -->
+
 ---
-## Summary VM on Localnet
+# VM on Localnet
+
+## Summary
+
 ### Virt-launcher Pod
-* eth0@if607 is on the cluster network `10.128.0.0/14`
-* tap0 is passed to QEMU for eth0
-* tap16711a0a730 is passed to QEMU for eth1
+- eth0@if607 is on the cluster network `10.128.0.0/14`
+- tap0 is passed to QEMU for eth0
+- tap16711a0a730 is passed to QEMU for eth1
 
 ### Virtual Machine
-* eth0 is always IP `10.0.2.2/24`
-* Default gateway is always `10.0.2.1` on virt-launcher
-* Masquerades at node edge as IP of node default interface `br-ex`
-* eth1 is `192.168.4.71/24` from DHCP on datacenter VLAN 1924
+- eth0 is always IP `10.0.2.2/24`
+- Default gateway is always `10.0.2.1` on virt-launcher
+- Masquerades at node edge as IP of node default interface `br-ex`
+- eth1 is `192.168.4.71/24` from DHCP on datacenter VLAN 1924
+
+<span class="logo-emoji">📚</span><!-- books -->
 
 ---
 <!-- _class: invert icon -->
@@ -748,11 +802,11 @@ default via 192.168.4.1 dev eth1 proto dhcp src 192.168.4.71 metric 101
 
 ### 2. OVN–Kubernetes (Primary CNI)
 
-* **ovn‑kubernetes GitHub**  
+* **ovn‑kubernetes GitHub**
   * Website: [ovn-kubernetes.io/](https://ovn-kubernetes.io/)
-  * Repo: [ovn-org/ovn-kubernetes](https://github.com/ovn-org/ovn-kubernetes)  
-  * Core repo for the OVN–Kubernetes integration: CNI binaries, controllers, docs.  
-* **OpenShift OVN‑Kubernetes Guide**  
+  * Repo: [ovn-org/ovn-kubernetes](https://github.com/ovn-org/ovn-kubernetes)
+  * Core repo for the OVN–Kubernetes integration: CNI binaries, controllers, docs.
+* **OpenShift OVN‑Kubernetes Guide**
   * Docs: [OpenShift Container Platform Networking – OVN‑Kubernetes](https://docs.redhat.com/en/documentation/openshift_container_platform/4.18/html/networking/index)
   * Red Hat's overview of
 
