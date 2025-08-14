@@ -1,38 +1,5 @@
 # Deep dive into [CNI](https://cni.dev/)
 
+[![GitHub release (latest by date)](https://img.shields.io/github/v/release/username/repository)](https://github.com/username/repository/releases/latest)
 
-# Presentation Outline
-## Intro & objectives
-
-
----
-## CNI spec & OVN‑Kubernetes overview
-
-```bash
-ls -l /tmp
-```
-
----
-## Multus architecture
-
----
-style: |
-  background-color: var(--color-quaternary);
-  color: white
----
-
-## Bridge plugin deep dive (config + demo)
-
----
-## MAC VLAN plugin deep dive
-
----
-## Debugging tools & workflows
-
----
-## KubeVirt example on OpenShift
-
----
-## Q&A / further reading
-
-* [CNI Spec](https://github.com/containernetworking/cni/blob/main/SPEC.md)
+This repo contains as series of demo test cases to explore how OpenShift Virtualization (Kubevirt) interacts with CNI. The [presentation.md](presentation.md) can be viewed in PDF form in the releases.
