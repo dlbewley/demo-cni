@@ -1,0 +1,44 @@
+#
+# DO NOT CREATE THIS RESOURCE MANUALLY
+# It is here only for reference.
+# This is the NetworkAttachmentDefinition is created by the CUDN controller
+#
+---
+apiVersion: k8s.cni.cncf.io/v1
+kind: NetworkAttachmentDefinition
+metadata:
+  annotations:
+    k8s.ovn.org/network-id: "7"
+    k8s.ovn.org/network-name: cluster_udn_cudn-1924
+  creationTimestamp: "2025-08-13T21:13:25Z"
+  finalizers:
+  - k8s.ovn.org/user-defined-network-protection
+  generation: 1
+  labels:
+    allow-cudn-1924: "true"
+    k8s.ovn.org/user-defined-network: ""
+  name: cudn-1924
+  namespace: demo-vm-localnet-cudn
+  ownerReferences:
+  - apiVersion: k8s.ovn.org/v1
+    blockOwnerDeletion: true
+    controller: true
+    kind: ClusterUserDefinedNetwork
+    name: cudn-1924
+    uid: 54092601-bd24-4e09-a43d-45adc7d9b475
+  resourceVersion: "117020911"
+  uid: eb730cee-e1c9-4d85-8fcb-5efd4457771e
+spec:
+  config: |-
+    {
+      "cniVersion": "1.0.0",
+      "excludeSubnets": "192.168.4.0/25,192.168.4.128/26,192.168.4.240/28",
+      "mtu": 1500,
+      "name": "cluster_udn_cudn-1924",
+      "netAttachDefName": "demo-vm-localnet-cudn/cudn-1924",
+      "physicalNetworkName": "physnet-br-vmdata",
+      "role": "secondary",
+      "topology": "localnet",
+      "type": "ovn-k8s-cni-overlay",
+      "vlanID": 1924
+    }

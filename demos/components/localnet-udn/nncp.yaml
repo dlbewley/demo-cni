@@ -1,0 +1,14 @@
+# this should go somewhere else
+apiVersion: nmstate.io/v1
+kind: NodeNetworkConfigurationPolicy
+metadata:
+  name: ovs-bridge-mapping-physnet-br-vmdata
+spec:
+  desiredState:
+    ovn:
+      bridge-mappings:
+        - bridge: br-vmdata
+          localnet: physnet-br-vmdata
+          state: present
+  nodeSelector:
+    machine.openshift.io/cluster-api-machineset: hub-v57jl-cnv
