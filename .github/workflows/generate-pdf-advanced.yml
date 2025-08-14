@@ -40,8 +40,12 @@ jobs:
           CONFIG_FILE="${{ github.event.inputs.config_file || 'marp-config.json' }}"
           if [ -f "$CONFIG_FILE" ]; then
             echo "Using configuration from $CONFIG_FILE"
+            echo "Config file contents:"
+            cat "$CONFIG_FILE"
+
             # Use jq to parse the JSON and extract presentations array
             MATRIX=$(jq -r '.presentations | map({file: .file, theme: .theme, output: .output, allow_local_files: (.allow_local_files // true)}) | @json' "$CONFIG_FILE")
+            echo "Parsed matrix: $MATRIX"
             echo "matrix=$MATRIX" >> $GITHUB_OUTPUT
           else
             echo "No configuration file found, using defaults"
@@ -86,26 +90,38 @@ jobs:
           MARP_CMD="$MARP_CMD --allow-local-files"
         fi
 
-        # Use the output filename from config, or default to same basename as input
+        # Use the output filename from config
         OUTPUT_FILE="${{ matrix.config.output }}"
-        if [ -z "$OUTPUT_FILE" ]; then
-          # Default to same basename as input file with .pdf extension
-          OUTPUT_FILE=$(basename "${{ matrix.config.file }}" .md).pdf
-        fi
 
         # Determine output format based on file extension
         if [[ "$OUTPUT_FILE" == *.html ]]; then
           # Generate HTML
           MARP_CMD="$MARP_CMD --html -o $OUTPUT_FILE ${{ matrix.config.file }}"
           OUTPUT_FORMAT="html"
+        elif [[ "$OUTPUT_FILE" == *.pdf ]]; then
+          # Generate PDF
+          MARP_CMD="$MARP_CMD --pdf -o $OUTPUT_FILE ${{ matrix.config.file }}"
+          OUTPUT_FORMAT="pdf"
         else
-          # Generate PDF (default)
+          # Default to PDF if no extension specified
+          OUTPUT_FILE=$(basename "${{ matrix.config.file }}" .md).pdf
           MARP_CMD="$MARP_CMD --pdf -o $OUTPUT_FILE ${{ matrix.config.file }}"
           OUTPUT_FORMAT="pdf"
         fi
 
         echo "Running: $MARP_CMD"
+        echo "Output file: $OUTPUT_FILE"
+        echo "Output format: $OUTPUT_FORMAT"
         $MARP_CMD
+
+        # Verify the file was created
+        if [ -f "$OUTPUT_FILE" ]; then
+          echo "✅ Successfully generated $OUTPUT_FILE"
+          ls -la "$OUTPUT_FILE"
+        else
+          echo "❌ Failed to generate $OUTPUT_FILE"
+          exit 1
+        fi
 
         # Store the output filename and format for other steps
         echo "output_file=$OUTPUT_FILE" >> $GITHUB_OUTPUT
@@ -128,6 +144,22 @@ jobs:
         git config --local user.email "action@github.com"
         git config --local user.name "GitHub Action"
 
+        echo "Current working directory: $(pwd)"
+        echo "Files in current directory:"
+        ls -la
+
+        echo "Generated file: ${{ steps.generate.outputs.output_file }}"
+        echo "Output format: ${{ steps.generate.outputs.output_format }}"
+
+        # Check if the file exists
+        if [ -f "${{ steps.generate.outputs.output_file }}" ]; then
+          echo "✅ File exists: ${{ steps.generate.outputs.output_file }}"
+          ls -la "${{ steps.generate.outputs.output_file }}"
+        else
+          echo "❌ File does not exist: ${{ steps.generate.outputs.output_file }}"
+          exit 1
+        fi
+
         # Check if we have changes to commit
         if git diff --quiet && git diff --staged --quiet; then
           echo "No changes to commit"
@@ -136,6 +168,9 @@ jobs:
 
         # Add the generated file
         git add "${{ steps.generate.outputs.output_file }}"
+
+        # Show git status
+        git status
 
         # Commit the changes
         git commit -m "Auto-generate ${{ steps.generate.outputs.output_format }} from ${{ matrix.config.file }} [skip ci]"
