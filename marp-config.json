@@ -10,7 +10,14 @@
       "theme": "./css/mylogo.css",
       "output": "presentation.pdf",
       "allow_local_files": true,
-      "description": "Main presentation with custom logo theme"
+      "description": "Main presentation with custom logo theme - PDF version"
+    },
+    {
+      "file": "presentation.md",
+      "theme": "./css/mylogo.css",
+      "output": "presentation.html",
+      "allow_local_files": true,
+      "description": "Main presentation with custom logo theme - HTML version"
     }
   ]
-} 
+}
