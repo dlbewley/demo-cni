@@ -1,4 +1,4 @@
-name: Generate PDFs and HTML with Configuration
+name: Generate PDFs and HTML (PDF to releases, HTML to repo)
 
 on:
   push:
@@ -148,15 +148,17 @@ jobs:
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-    - name: Create Release (on push to main/master)
-      if: github.event_name == 'push' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master')
+    # Only create GitHub releases for PDF files
+    # HTML files are committed to the repository but not released
+    - name: Create Release (on push to main/master, PDF only)
+      if: github.event_name == 'push' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master') && steps.generate.outputs.output_format == 'pdf'
       uses: softprops/action-gh-release@v1
       with:
         files: ${{ steps.generate.outputs.output_file }}
-        tag_name: ${{ steps.generate.outputs.output_format }}-${{ matrix.config.file }}-v${{ github.run_number }}
-        name: ${{ steps.generate.outputs.output_format }} Release - ${{ matrix.config.file }}
+        tag_name: pdf-${{ matrix.config.file }}-v${{ github.run_number }}
+        name: PDF Release - ${{ matrix.config.file }}
         body: |
-          Auto-generate ${{ steps.generate.outputs.output_format }} from ${{ matrix.config.file }}
+          Auto-generate PDF from ${{ matrix.config.file }}
 
           Generated on: ${{ github.event.head_commit.timestamp }}
           Commit: ${{ github.sha }}
