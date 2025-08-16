@@ -224,9 +224,9 @@ Bridge can be used to attach to a Linux Bridge which may enable VLAN access or [
 
 
 ---
-
 <!-- class: invert icon -->
 <!-- header: Cluster Network -->
+<!-- demo: default-pod-net -->
 <style scoped> section { columns: 2; } </style>
 
 # VM Examples - Cluster Network
@@ -260,6 +260,7 @@ spec:
 
 ---
 <!-- class: icon -->
+<!-- demo: default-pod-net -->
 
 # Virt-Launcher Pod
 Two ethernet interfaces in the virt launcher pod.
@@ -287,7 +288,19 @@ k6t-eth0         UP             10.0.2.1/24
 
 <span class="logo-emoji">🫛</span><!-- pod -->
 
+
 ---
+<!-- class: icon -->
+<!-- demo: default-pod-net -->
+
+# Virt-Launcher Pod
+
+![contain](img/output-1.png)
+
+<span class="logo-emoji">🫛</span><!-- pod -->
+
+---
+<!-- demo: default-pod-net -->
 # Virtual Machine
 
 * VM _always_ has IP `10.0.2.2/24`.
@@ -313,6 +326,7 @@ default via 10.0.2.1 dev eth0 proto dhcp src 10.0.2.2 metric 100
 <span class="logo-emoji">💻</span><!-- computer -->
 
 ---
+<!-- demo: default-pod-net -->
 # VM on Default Cluster Network
 
 ## Summary
