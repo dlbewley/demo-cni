@@ -58,6 +58,10 @@ jobs:
             basename=$(basename "$file" .md)
             output_file="img/${basename}.png"
 
+            # Remove any existing PNG files with the same base name (including numbered suffixes)
+            echo "Cleaning up existing files for: ${basename}"
+            rm -f img/${basename}*.png
+
             echo "Generating: $output_file"
 
             # Generate PNG directly from markdown file using mermaid-cli
