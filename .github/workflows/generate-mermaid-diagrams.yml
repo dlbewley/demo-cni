@@ -2,7 +2,7 @@ name: Generate Mermaid Diagrams as PNG
 
 on:
   push:
-    branches: [ main, master ]
+    branches: [ main, master, feature/diagrams ]
     paths:
       - '**/diagram*.md'
       - '.github/workflows/generate-mermaid-diagrams.yml'
