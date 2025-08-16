@@ -60,33 +60,14 @@ jobs:
 
             echo "Generating: $output_file"
 
-            # Generate PNG using mermaid-cli
-            # First, extract the mermaid code from the markdown
-            mermaid_code=$(awk '/^```mermaid$/,/^```$/' "$file" | grep -v '^```')
+            # Generate PNG directly from markdown file using mermaid-cli
+            mmdc -w 1920 -H 1080 -i "$file" -o "$output_file" -p ".github/workflows/puppeteer-config.json"
 
-            if [ -n "$mermaid_code" ]; then
-              # Create a temporary file for the mermaid code
-              temp_mermaid=$(mktemp)
-              echo "$mermaid_code" > "$temp_mermaid"
-
-              if [ -s "$temp_mermaid" ]; then
-                # Generate PNG using mermaid-cli with input file
-                mmdc -w 1920 -H 1080 -i "$temp_mermaid" -o "$output_file" -p ".github/workflows/puppeteer-config.json"
-              else
-                echo "❌ Mermaid code extraction failed for $file"
-              fi
-
-              # Clean up temporary file
-              rm "$temp_mermaid"
-
-              if [ -f "$output_file" ]; then
-                echo "✅ Successfully generated $output_file"
-                ls -la "$output_file"
-              else
-                echo "❌ Failed to generate $output_file"
-              fi
+            if [ -f "$output_file" ]; then
+              echo "✅ Successfully generated $output_file"
+              ls -la "$output_file"
             else
-              echo "⚠️  No mermaid code found in $file"
+              echo "❌ Failed to generate $output_file"
             fi
           fi
         done
@@ -96,23 +77,38 @@ jobs:
         git config --local user.email "action@github.com"
         git config --local user.name "GitHub Action"
 
-        # Check if we have any PNG files to commit
-        if git diff --name-only --cached | grep -q "\.png$" || git ls-files --others --exclude-standard | grep -q "\.png$"; then
-          echo "PNG files found, committing changes"
+        # Show current git status
+        echo "=== Git status before adding files ==="
+        git status
 
-          # Add all PNG files in img directory
-          git add img/*.png
+        # Force add all PNG files in img directory (including new ones)
+        echo "=== Adding PNG files ==="
+        git add -f img/*.png
 
-          # Show git status
-          git status
+        # Show what was staged
+        echo "=== Staged files ==="
+        git diff --cached --name-only
+
+        # Show git status after adding
+        echo "=== Git status after adding files ==="
+        git status
+
+        # Check if we have staged changes
+        if git diff --cached --quiet; then
+          echo "No changes to commit"
+        else
+          echo "Changes detected, committing..."
 
           # Commit the changes
           git commit -m "Auto-generate Mermaid diagrams as PNG [skip ci]"
 
+          # Show final status
+          echo "=== Final git status ==="
+          git status
+
           # Push the changes
+          echo "=== Pushing changes ==="
           git push
-        else
-          echo "No PNG files to commit"
         fi
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
