@@ -60,7 +60,7 @@ jobs:
 
             # Remove any existing PNG files with the same base name (including numbered suffixes)
             echo "Cleaning up existing files for: ${basename}"
-            rm -f img/${basename}*.png
+            rm -f "$output_file"
 
             echo "Generating: $output_file"
 
