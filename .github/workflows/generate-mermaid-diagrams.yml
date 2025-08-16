@@ -75,12 +75,9 @@ jobs:
               else
                 echo "❌ Mermaid code extraction failed for $file"
               fi
-                # Clean up temporary file
-                rm "$temp_mermaid"
-            else
-              echo "⚠️  No mermaid code found in $file"
-            fi
 
+              # Clean up temporary file
+              rm "$temp_mermaid"
 
               if [ -f "$output_file" ]; then
                 echo "✅ Successfully generated $output_file"
