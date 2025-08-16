@@ -326,6 +326,17 @@ default via 10.0.2.1 dev eth0 proto dhcp src 10.0.2.2 metric 100
 <span class="logo-emoji">💻</span><!-- computer -->
 
 ---
+<!-- class: icon -->
+<!-- demo: default-pod-net -->
+
+# Virtual Machine
+
+![contain](img/diagram-default-pod-net-vm.png)
+
+<span class="logo-emoji">💻</span><!-- computer -->
+
+
+---
 <!-- demo: default-pod-net -->
 # VM on Default Cluster Network
 
@@ -342,7 +353,6 @@ default via 10.0.2.1 dev eth0 proto dhcp src 10.0.2.2 metric 100
 - Masquerades at node edge as IP of node default interface `br-ex`
 
 <span class="logo-emoji">📚</span><!-- books -->
-
 
 ---
 <!-- _class: invert icon -->
