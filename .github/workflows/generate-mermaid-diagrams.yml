@@ -71,7 +71,7 @@ jobs:
 
               if [ -s "$temp_mermaid" ]; then
                 # Generate PNG using mermaid-cli with input file
-                mmdc -w 1920 -H 1080 -i "$temp_mermaid" -o "$output_file" -p "".github/workflows/puppeteer-config.json"
+                mmdc -w 1920 -H 1080 -i "$temp_mermaid" -o "$output_file" -p ".github/workflows/puppeteer-config.json"
               else
                 echo "❌ Mermaid code extraction failed for $file"
               fi
