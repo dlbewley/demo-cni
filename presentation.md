@@ -295,7 +295,7 @@ k6t-eth0         UP             10.0.2.1/24
 
 # Virt-Launcher Pod
 
-![contain](img/output-1.png)
+![contain](img/diagram-default-pod-net-pod.png)
 
 <span class="logo-emoji">🫛</span><!-- pod -->
 
