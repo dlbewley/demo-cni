@@ -31,7 +31,7 @@ jobs:
     - name: Install dependencies
       run: |
         npm install -g @mermaid-js/mermaid-cli
-        npm install puppeteer@latest
+        npm install puppeteer
 
     - name: Find diagram files
       id: find-diagrams
@@ -71,7 +71,7 @@ jobs:
 
               if [ -s "$temp_mermaid" ]; then
                 # Generate PNG using mermaid-cli with input file
-                mmdc -w 1920 -H 1080 -i "$temp_mermaid" -o "$output_file"
+                mmdc -w 1920 -H 1080 -i "$temp_mermaid" -o "$output_file" -p "".github/workflows/puppeteer-config.json"
               else
                 echo "❌ Mermaid code extraction failed for $file"
               fi
