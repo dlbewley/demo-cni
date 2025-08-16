@@ -69,11 +69,18 @@ jobs:
               temp_mermaid=$(mktemp)
               echo "$mermaid_code" > "$temp_mermaid"
 
-              # Generate PNG using mermaid-cli with input file
-              mmdc -i "$temp_mermaid" -o "$output_file" -f png
+              if [ -s "$temp_mermaid" ]; then
+                # Generate PNG using mermaid-cli with input file
+                mmdc -i "$temp_mermaid" -o "$output_file" -f png
+              else
+                echo "❌ Mermaid code extraction failed for $file"
+              fi
+                # Clean up temporary file
+                rm "$temp_mermaid"
+            else
+              echo "⚠️  No mermaid code found in $file"
+            fi
 
-              # Clean up temporary file
-              rm "$temp_mermaid"
 
               if [ -f "$output_file" ]; then
                 echo "✅ Successfully generated $output_file"
