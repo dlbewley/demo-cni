@@ -132,13 +132,19 @@ jobs:
         UNIQUE_ID="${THEME_NAME}-${OUTPUT_FILE}"
         echo "unique_id=$UNIQUE_ID" >> $GITHUB_OUTPUT
 
-    - name: Upload artifact
+    # Only upload PDF files as artifacts
+    # HTML files are committed to the repository instead
+    - name: Upload artifact (PDF only)
+      if: steps.generate.outputs.output_format == 'pdf'
       uses: actions/upload-artifact@v4
       with:
         name: ${{ steps.generate.outputs.output_format }}-${{ steps.generate.outputs.unique_id }}
         path: ${{ steps.generate.outputs.output_file }}
         retention-days: 30
 
+    # Commit files to repository
+    # HTML files are always committed to ensure latest version is available
+    # PDF files are only committed if there are changes
     - name: Commit files to repository
       run: |
         git config --local user.email "action@github.com"
@@ -161,9 +167,16 @@ jobs:
         fi
 
         # Check if we have changes to commit
-        if git diff --quiet && git diff --staged --quiet; then
-          echo "No changes to commit"
-          exit 0
+        # For HTML files, we always want to commit to ensure the latest version is in the repo
+        # For PDF files, we check if there are actual changes
+        if [ "${{ steps.generate.outputs.output_format }}" = "html" ]; then
+          echo "HTML file - always committing to repository"
+        else
+          # For PDF files, check if there are changes
+          if git diff --quiet && git diff --staged --quiet; then
+            echo "No changes to commit for PDF"
+            exit 0
+          fi
         fi
 
         # Add the generated file
@@ -173,7 +186,11 @@ jobs:
         git status
 
         # Commit the changes
-        git commit -m "Auto-generate ${{ steps.generate.outputs.output_format }} from ${{ matrix.config.file }} [skip ci]"
+        if [ "${{ steps.generate.outputs.output_format }}" = "html" ]; then
+          git commit -m "Update HTML presentation from ${{ matrix.config.file }} [skip ci]"
+        else
+          git commit -m "Auto-generate ${{ steps.generate.outputs.output_format }} from ${{ matrix.config.file }} [skip ci]"
+        fi
 
         # Pull latest changes and rebase our commit on top
         git pull --rebase origin main
